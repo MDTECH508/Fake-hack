@@ -1,183 +1,66 @@
-                                    <!DOCTYPE html>
+                <!DOCTYPE html>
 <html lang="ht">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAKE YT TECH - Admin Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background: radial-gradient(circle at top right, #1e1b4b, #020617); min-height: 100vh; color: white; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
-        .btn-purple { background: linear-gradient(135deg, #8b5cf6, #d946ef); transition: 0.3s; }
-        .btn-purple:hover { box-shadow: 0 0 20px #8b5cf6; transform: scale(1.02); }
-        .hidden { display: none; }
-    </style>
 </head>
-<body class="p-4 md:p-10">
-
-    <!-- SEKSYON LOGIN -->
-    <div id="login-screen" class="flex items-center justify-center min-h-[80vh]">
-        <div class="glass-card p-8 w-full max-w-sm shadow-2xl border-purple-500/20">
-            <h2 class="text-purple-400 text-2xl font-black text-center mb-6 italic tracking-tighter">ADMIN ACCESS</h2>
-            <input id="adm-user" type="text" placeholder="Username" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl mb-4 text-white outline-none focus:border-purple-500">
-            <input id="adm-pass" type="password" placeholder="Password" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl mb-6 text-white outline-none focus:border-purple-500">
-            <button onclick="handleLogin()" class="w-full btn-purple py-3 rounded-xl font-bold uppercase tracking-widest text-black">Login</button>
-        </div>
+<body class="bg-slate-950 text-white p-6">
+    <div id="login-box" class="max-w-md mx-auto mt-20 p-8 border border-white/10 rounded-3xl bg-white/5">
+        <h2 class="text-center text-2xl font-bold mb-6 text-cyan-400 italic">ADMIN MASTER</h2>
+        <input id="pass" type="password" placeholder="Password" class="w-full p-4 mb-4 rounded-xl bg-black text-white border border-white/20 outline-none focus:border-cyan-500">
+        <button onclick="checkPass()" class="w-full bg-cyan-500 p-4 rounded-xl text-black font-black">ENTRE NAN SISTÈM</button>
     </div>
 
-    <!-- SEKSYON DASHBOARD (HIDDEN BY DEFAULT) -->
-    <div id="admin-dashboard" class="max-w-6xl mx-auto hidden">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">FAKE YT TECH</h1>
-            <button onclick="handleLogout()" class="text-xs bg-red-500/20 text-red-400 px-4 py-2 rounded-lg border border-red-500/30">Soti</button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- PANEL KREYE KLE -->
-            <div class="glass-card p-6 h-fit border-purple-500/20">
-                <h2 class="font-bold mb-4 flex items-center">⚡ Jenere Kle FAKE</h2>
-                <div class="mb-4">
-                    <label class="block text-[10px] text-gray-400 mb-2 font-bold uppercase">Durasyon Sèvis</label>
-                    <select id="duration" class="w-full bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-purple-500">
-                        <option value="1">1 Jou</option>
-                        <option value="7">7 Jou</option>
-                        <option value="30">30 Jou</option>
-                    </select>
-                </div>
-                <button onclick="generateKey()" class="btn-purple w-full py-4 rounded-xl font-black uppercase text-sm tracking-widest mb-4 text-black">Create Key</button>
-                <div id="last-key-display" class="text-center font-mono text-purple-300 font-bold bg-purple-500/10 p-2 rounded-lg border border-purple-500/20 hidden"></div>
-            </div>
-
-            <!-- TABLO JESYON -->
-            <div class="glass-card p-6 lg:col-span-2">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="font-bold italic">Lis Kle ki Sove</h2>
-                    <div class="flex gap-2 bg-white/5 p-1 rounded-lg border border-white/10">
-                        <button onclick="updateTable('all')" class="px-3 py-1 text-[10px] rounded hover:bg-white/10">Tout</button>
-                        <button onclick="updateTable('active')" class="px-3 py-1 text-[10px] text-green-400 rounded hover:bg-green-500/10">Aktif</button>
-                        <button onclick="updateTable('expired')" class="px-3 py-1 text-[10px] text-red-400 rounded hover:bg-red-500/10">Ekspire</button>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[10px] uppercase text-gray-500 border-b border-white/10">
-                                <th class="pb-3">Kle</th>
-                                <th class="pb-3">Estati</th>
-                                <th class="pb-3">Ekspirasyon</th>
-                                <th class="pb-3 text-right">Aksyon</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-key-list" class="text-xs"></tbody>
-                    </table>
+    <div id="dash" class="hidden max-w-lg mx-auto">
+        <h1 class="text-3xl font-black text-cyan-400 mb-6 italic text-center uppercase">Key Generator</h1>
+        <div class="bg-white/5 p-8 rounded-[40px] border border-white/10 backdrop-blur-xl shadow-2xl">
+            <label class="block text-xs text-gray-500 mb-2 font-bold uppercase tracking-widest">Durasyon Plan an</label>
+            <select id="days" class="w-full p-4 mb-6 rounded-2xl bg-black border border-white/10 text-cyan-400 font-bold outline-none">
+                <option value="1">1 Jou Access</option>
+                <option value="7">7 Jou Access</option>
+                <option value="30">30 Jou Access</option>
+            </select>
+            
+            <button onclick="generateKey()" class="w-full bg-cyan-500 hover:bg-cyan-400 p-5 rounded-2xl text-black font-black uppercase tracking-widest transition-all">
+                Kreye Kle Sekirize
+            </button>
+            
+            <div id="result" class="mt-8 p-6 bg-black/60 rounded-3xl border border-dashed border-cyan-500/50 hidden">
+                <p class="text-[10px] text-center text-gray-500 uppercase mb-2">Kopye kle sa a bay kliyan an:</p>
+                <div class="flex items-center gap-2">
+                    <code id="key-display" class="flex-1 text-xl font-mono text-cyan-300 text-center font-bold"></code>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- LOGIC DATABASE ---
-        let db = JSON.parse(localStorage.getItem('fake_yt_database')) || [];
+        // PWOTOKÒL SEKIRITE: Sèl sa a dwe menm jan ak pa Users la
+        const SECURITY_SALT = "FAKE_YT_2026_MASTER_SECRET";
 
-        function saveToDisk() {
-            localStorage.setItem('fake_yt_database', JSON.stringify(db));
+        function checkPass() {
+            if(document.getElementById('pass').value === 'admin') {
+                document.getElementById('login-box').classList.add('hidden');
+                document.getElementById('dash').classList.remove('hidden');
+            } else { alert("Mdp enkòrèk!"); }
         }
 
-        // --- LOGIC LOGIN ---
-        function handleLogin() {
-            const u = document.getElementById('adm-user').value;
-            const p = document.getElementById('adm-pass').value;
-            if(u === 'admin' && p === 'admin') {
-                sessionStorage.setItem('isAuth', 'true');
-                checkAuth();
-            } else { alert('Aksè Refize!'); }
-        }
-
-        function handleLogout() {
-            sessionStorage.removeItem('isAuth');
-            checkAuth();
-        }
-
-        function checkAuth() {
-            if(sessionStorage.getItem('isAuth') === 'true') {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                updateTable();
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('admin-dashboard').classList.add('hidden');
-            }
-        }
-
-        // --- LOGIC KLE ---
         function generateKey() {
-            const days = document.getElementById('duration').value;
-            const p1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-            const p2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-            const keyId = `FAKE-${p1}-${p2}`;
+            const d = document.getElementById('days').value;
+            const now = Math.floor(Date.now() / 1000);
             
-            const expDate = new Date();
-            expDate.setDate(expDate.getDate() + parseInt(days));
-
-            const newKey = {
-                id: keyId,
-                expireAt: expDate.getTime(),
-                days: days,
-                created: new Date().getTime()
-            };
-
-            db.push(newKey);
-            saveToDisk();
+            // Nou kreye yon "Signature" matematik
+            const rawData = SECURITY_SALT + d + "VALID";
+            const signature = btoa(rawData).substring(2, 10).toUpperCase();
             
-            const display = document.getElementById('last-key-display');
-            display.textContent = keyId;
-            display.classList.remove('hidden');
+            // Fòma kle: FAKE - JOU - SIGNATURE
+            const finalKey = `FAKE-${d}D-${signature}`;
             
-            updateTable();
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('key-display').innerText = finalKey;
         }
-
-        function updateTable(filter = 'all') {
-            const list = document.getElementById('admin-key-list');
-            list.innerHTML = "";
-            const kounya = new Date().getTime();
-
-            db.forEach(key => {
-                const isExpired = kounya > key.expireAt;
-                if(filter === 'active' && isExpired) return;
-                if(filter === 'expired' && !isExpired) return;
-
-                const statusLabel = isExpired 
-                    ? `<span class="text-red-400 bg-red-400/10 px-2 py-1 rounded border border-red-500/20">EXPIRE</span>`
-                    : `<span class="text-green-400 bg-green-400/10 px-2 py-1 rounded border border-green-500/20">AKTIF</span>`;
-
-                const row = document.createElement('tr');
-                row.className = "border-b border-white/5 hover:bg-white/5 transition";
-                row.innerHTML = `
-                    <td class="py-4 font-mono font-bold text-purple-300">${key.id}</td>
-                    <td class="py-4">${statusLabel}</td>
-                    <td class="py-4 text-gray-500">${new Date(key.expireAt).toLocaleDateString()}</td>
-                    <td class="py-4 text-right">
-                        <button onclick="copyText('${key.id}')" class="bg-white/5 px-2 py-1 rounded">Copy</button>
-                        <button onclick="deleteKey('${key.id}')" class="ml-2 text-red-500">🗑️</button>
-                    </td>
-                `;
-                list.prepend(row);
-            });
-        }
-
-        function deleteKey(id) {
-            db = db.filter(k => k.id !== id);
-            saveToDisk();
-            updateTable();
-        }
-
-        function copyText(t) {
-            navigator.clipboard.writeText(t);
-            alert("Kopye!");
-        }
-
-        // Tcheke si admin te deja konekte
-        checkAuth();
     </script>
 </body>
 </html>
+  
