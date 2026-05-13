@@ -1,66 +1,194 @@
-                <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ht">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAKE YT TECH - Admin Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { 
+            background-color: #0b0e1a; 
+            color: white; 
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+        }
+        .glass-card {
+            background: #161b2c;
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid #252b41;
+            margin-bottom: 20px;
+        }
+        .btn-purple {
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+            color: white;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 16px;
+            border-radius: 14px;
+            width: 100%;
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+        .btn-purple:hover { opacity: 0.9; transform: scale(1.01); }
+        .key-display {
+            background: #1e253a;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-family: monospace;
+            color: #d1d5db;
+            margin-top: 15px;
+            border: 1px solid #2d364f;
+        }
+        .status-active { color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        .status-expired { color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        .copy-btn { background: #252b41; padding: 6px 12px; border-radius: 8px; font-size: 12px; transition: 0.2s; }
+        .copy-btn:hover { background: #313a57; }
+        .tutorial-card { border-left: 4px solid #a855f7; }
+    </style>
 </head>
-<body class="bg-slate-950 text-white p-6">
-    <div id="login-box" class="max-w-md mx-auto mt-20 p-8 border border-white/10 rounded-3xl bg-white/5">
-        <h2 class="text-center text-2xl font-bold mb-6 text-cyan-400 italic">ADMIN MASTER</h2>
-        <input id="pass" type="password" placeholder="Password" class="w-full p-4 mb-4 rounded-xl bg-black text-white border border-white/20 outline-none focus:border-cyan-500">
-        <button onclick="checkPass()" class="w-full bg-cyan-500 p-4 rounded-xl text-black font-black">ENTRE NAN SISTÈM</button>
-    </div>
+<body>
 
-    <div id="dash" class="hidden max-w-lg mx-auto">
-        <h1 class="text-3xl font-black text-cyan-400 mb-6 italic text-center uppercase">Key Generator</h1>
-        <div class="bg-white/5 p-8 rounded-[40px] border border-white/10 backdrop-blur-xl shadow-2xl">
-            <label class="block text-xs text-gray-500 mb-2 font-bold uppercase tracking-widest">Durasyon Plan an</label>
-            <select id="days" class="w-full p-4 mb-6 rounded-2xl bg-black border border-white/10 text-cyan-400 font-bold outline-none">
-                <option value="1">1 Jou Access</option>
-                <option value="7">7 Jou Access</option>
-                <option value="30">30 Jou Access</option>
+    <div class="max-w-xl mx-auto">
+        
+        <!-- SECTION GENERATRICE (Upper part of 2416.jpg) -->
+        <div class="glass-card">
+            <label class="text-[10px] text-gray-500 font-bold uppercase mb-2 block tracking-widest">Durasyon Sèvis</label>
+            <select id="duration" class="w-full bg-[#1e253a] border border-[#2d364f] p-4 rounded-xl mb-6 outline-none focus:border-purple-500">
+                <option value="1">1 Jou</option>
+                <option value="7">7 Jou</option>
+                <option value="30">30 Jou</option>
             </select>
             
-            <button onclick="generateKey()" class="w-full bg-cyan-500 hover:bg-cyan-400 p-5 rounded-2xl text-black font-black uppercase tracking-widest transition-all">
-                Kreye Kle Sekirize
-            </button>
+            <button onclick="generateKey()" class="btn-purple">Create Key</button>
             
-            <div id="result" class="mt-8 p-6 bg-black/60 rounded-3xl border border-dashed border-cyan-500/50 hidden">
-                <p class="text-[10px] text-center text-gray-500 uppercase mb-2">Kopye kle sa a bay kliyan an:</p>
-                <div class="flex items-center gap-2">
-                    <code id="key-display" class="flex-1 text-xl font-mono text-cyan-300 text-center font-bold"></code>
+            <div id="new-key-box" class="key-display hidden">
+                <span id="new-key-text">FAKE-XXXX-XXXX</span>
+            </div>
+        </div>
+
+        <!-- LIST SECTION (Lower part of 2416.jpg) -->
+        <div class="glass-card">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="italic font-black text-xl italic tracking-tighter">Lis Kle ki Sove</h2>
+                <div class="flex gap-2 text-[10px] font-bold">
+                    <button class="text-gray-400">Tout</button>
+                    <button class="text-[#10b981]">Aktif</button>
+                    <button class="text-[#ef4444]">Ekspire</button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-[10px] uppercase font-bold text-gray-500">
+                    <thead>
+                        <tr class="border-b border-gray-800">
+                            <th class="pb-3">Kle</th>
+                            <th class="pb-3">Estati</th>
+                            <th class="pb-3">Ekspirasyon</th>
+                            <th class="pb-3 text-right">Aksyon</th>
+                        </tr>
+                    </thead>
+                    <tbody id="key-table-body" class="text-white normal-case font-medium">
+                        <!-- Keys will appear here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TUTORIAL SECTION -->
+        <div class="glass-card tutorial-card">
+            <h3 class="text-purple-400 font-bold mb-3"><i class="fas fa-book-open mr-2"></i> Tutorial Admin</h3>
+            <div class="bg-black/20 p-4 rounded-xl text-xs text-gray-400 leading-relaxed">
+                <p class="mb-2">1. Chwazi kantite jou ou vle bay kliyan an.</p>
+                <p class="mb-2">2. Klike sou <b>Create Key</b> pou jenere yon kle inik.</p>
+                <p>3. Kopye kle a nan tablo a epi voye l bay kliyan an pou l mete nan paj index li a.</p>
+            </div>
+            <div class="mt-4 flex gap-2">
+                <div class="flex-1 bg-[#1e253a] p-3 rounded-lg text-center text-[10px] text-gray-500">
+                    <i class="fab fa-youtube text-red-500 block text-lg mb-1"></i> Video Tuto disp...
+                </div>
+                <div class="flex-1 bg-[#1e253a] p-3 rounded-lg text-center text-[10px] text-gray-500">
+                    <i class="fas fa-info-circle text-cyan-500 block text-lg mb-1"></i> Lòt Tuto disp...
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>
-        // PWOTOKÒL SEKIRITE: Sèl sa a dwe menm jan ak pa Users la
         const SECURITY_SALT = "FAKE_YT_2026_MASTER_SECRET";
-
-        function checkPass() {
-            if(document.getElementById('pass').value === 'admin') {
-                document.getElementById('login-box').classList.add('hidden');
-                document.getElementById('dash').classList.remove('hidden');
-            } else { alert("Mdp enkòrèk!"); }
-        }
+        let keyList = JSON.parse(localStorage.getItem('fake_yt_keys')) || [];
 
         function generateKey() {
-            const d = document.getElementById('days').value;
-            const now = Math.floor(Date.now() / 1000);
+            const d = document.getElementById('duration').value;
+            const p1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const p2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const signature = btoa(SECURITY_SALT + d + "VALID").substring(2, 6).toUpperCase();
             
-            // Nou kreye yon "Signature" matematik
-            const rawData = SECURITY_SALT + d + "VALID";
-            const signature = btoa(rawData).substring(2, 10).toUpperCase();
+            const finalKey = `FAKE-${p1}-${p2}`; // Nou ka itilize fòma sa oswa fòma siyati a
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + parseInt(d));
+
+            const newObject = {
+                key: finalKey,
+                days: d,
+                expiry: expiryDate.toLocaleDateString(),
+                timestamp: expiryDate.getTime(),
+                status: 'AKTIF'
+            };
+
+            keyList.unshift(newObject);
+            localStorage.setItem('fake_yt_keys', JSON.stringify(keyList));
             
-            // Fòma kle: FAKE - JOU - SIGNATURE
-            const finalKey = `FAKE-${d}D-${signature}`;
+            document.getElementById('new-key-box').classList.remove('hidden');
+            document.getElementById('new-key-text').innerText = finalKey;
             
-            document.getElementById('result').classList.remove('hidden');
-            document.getElementById('key-display').innerText = finalKey;
+            renderTable();
         }
+
+        function renderTable() {
+            const tableBody = document.getElementById('key-table-body');
+            tableBody.innerHTML = '';
+            const kounya = new Date().getTime();
+
+            keyList.forEach((item, index) => {
+                const isExpired = kounya > item.timestamp;
+                const statusHtml = isExpired 
+                    ? `<span class="status-expired">EKSPIRE</span>` 
+                    : `<span class="status-active">AKTIF</span>`;
+
+                const row = `
+                    <tr class="border-b border-gray-800/50 hover:bg-white/[0.02]">
+                        <td class="py-4 font-mono text-purple-400 text-xs">${item.key}</td>
+                        <td class="py-4">${statusHtml}</td>
+                        <td class="py-4 text-gray-500 text-[11px]">${item.expiry}</td>
+                        <td class="py-4 text-right flex justify-end gap-2">
+                            <button onclick="copyKey('${item.key}')" class="copy-btn">Copy</button>
+                            <button onclick="deleteKey(${index})" class="text-gray-600 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function copyKey(text) {
+            navigator.clipboard.writeText(text);
+            alert("Kopye: " + text);
+        }
+
+        function deleteKey(index) {
+            if(confirm("Siprime kle sa a?")) {
+                keyList.splice(index, 1);
+                localStorage.setItem('fake_yt_keys', JSON.stringify(keyList));
+                renderTable();
+            }
+        }
+
+        // Chaje tablo a lè paj la louvri
+        renderTable();
     </script>
 </body>
 </html>
-  
