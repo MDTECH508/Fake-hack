@@ -3,192 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAKE YT TECH - Admin Master</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Fake YT Tech - Admin Panel</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
-            background-color: #0b0e1a; 
-            color: white; 
-            font-family: 'Inter', sans-serif;
-            padding: 20px;
+            background: radial-gradient(circle at top right, #1e1b4b, #09090b); 
+            color: #fff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px; 
+            overflow-x: hidden;
         }
-        .glass-card {
-            background: #161b2c;
-            border-radius: 24px;
-            padding: 24px;
-            border: 1px solid #252b41;
-            margin-bottom: 20px;
+        
+        /* Animasyon lè paj la ap chaje */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
-        .btn-purple {
-            background: linear-gradient(90deg, #a855f7, #ec4899);
-            color: white;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 16px;
-            border-radius: 14px;
-            width: 100%;
+
+        .container { 
+            width: 100%; 
+            max-width: 450px; 
+            background: rgba(20, 20, 35, 0.65); 
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            padding: 30px; 
+            border-radius: 24px; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1); 
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        h1 { 
+            background: linear-gradient(45deg, #ff2a85, #a124eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 26px; 
+            text-transform: uppercase; 
+            margin-bottom: 5px; 
+            text-align: center; 
+            letter-spacing: 1px;
+        }
+        .subtitle { color: #94a3b8; font-size: 13px; text-align: center; margin-bottom: 25px; font-weight: 500; }
+        
+        /* Kat style Glas */
+        .card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-bottom: 20px; 
+            backdrop-filter: blur(5px);
+        }
+        .card h3 { color: #22d3ee; font-size: 15px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        label { display: block; color: #94a3b8; font-size: 11px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        select { 
+            width: 100%; 
+            background: rgba(15, 15, 25, 0.8); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: #fff; 
+            padding: 12px; 
+            border-radius: 10px; 
+            font-size: 15px; 
+            outline: none; 
+            margin-bottom: 15px; 
+            cursor: pointer; 
             transition: 0.3s;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
         }
-        .btn-purple:hover { opacity: 0.9; transform: scale(1.01); }
-        .key-display {
-            background: #1e253a;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-family: monospace;
-            color: #d1d5db;
-            margin-top: 15px;
-            border: 1px solid #2d364f;
+        select:focus { border-color: #a124eb; box-shadow: 0 0 10px rgba(161, 36, 235, 0.2); }
+        
+        button { 
+            width: 100%; 
+            background: linear-gradient(135deg, #fa2c84, #a124eb); 
+            border: none; 
+            color: white; 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            box-shadow: 0 4px 20px rgba(250, 44, 132, 0.25); 
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
         }
-        .status-active { color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
-        .status-expired { color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
-        .copy-btn { background: #252b41; padding: 6px 12px; border-radius: 8px; font-size: 12px; transition: 0.2s; }
-        .copy-btn:hover { background: #313a57; }
-        .tutorial-card { border-left: 4px solid #a855f7; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(250, 44, 132, 0.4); filter: brightness(1.1); }
+        button:active { transform: translateY(0); }
+
+        .generated-key-box { 
+            background: rgba(0, 0, 0, 0.3); 
+            border: 1px dashed rgba(161, 36, 235, 0.5); 
+            padding: 14px; 
+            text-align: center; 
+            border-radius: 10px; 
+            margin-top: 15px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 18px; 
+            color: #22d3ee; 
+            letter-spacing: 2px; 
+            display: none; 
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .key-item { 
+            background: rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 10px; 
+            animation: fadeIn 0.4s ease;
+        }
+        .key-details div { font-family: monospace; font-size: 14px; margin-bottom: 5px; color: #e2e8f0; }
+        
+        .status { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .status.aktif { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
+        .status.ekspire { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        
+        .delete-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 16px; box-shadow: none; width: auto; padding: 0; transition: 0.2s; }
+        .delete-btn:hover { transform: scale(1.1); color: #f87171; }
     </style>
 </head>
 <body>
 
-    <div class="max-w-xl mx-auto">
-        
-        <!-- SECTION GENERATRICE (Upper part of 2416.jpg) -->
-        <div class="glass-card">
-            <label class="text-[10px] text-gray-500 font-bold uppercase mb-2 block tracking-widest">Durasyon Sèvis</label>
-            <select id="duration" class="w-full bg-[#1e253a] border border-[#2d364f] p-4 rounded-xl mb-6 outline-none focus:border-purple-500">
-                <option value="1">1 Jou</option>
-                <option value="7">7 Jou</option>
-                <option value="30">30 Jou</option>
-            </select>
-            
-            <button onclick="generateKey()" class="btn-purple">Create Key</button>
-            
-            <div id="new-key-box" class="key-display hidden">
-                <span id="new-key-text">FAKE-XXXX-XXXX</span>
-            </div>
-        </div>
+<div class="container">
+    <h1>Fake YT Tech</h1>
+    <div class="subtitle">Panel Jesyon Kle VPN</div>
 
-        <!-- LIST SECTION (Lower part of 2416.jpg) -->
-        <div class="glass-card">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="italic font-black text-xl italic tracking-tighter">Lis Kle ki Sove</h2>
-                <div class="flex gap-2 text-[10px] font-bold">
-                    <button class="text-gray-400">Tout</button>
-                    <button class="text-[#10b981]">Aktif</button>
-                    <button class="text-[#ef4444]">Ekspire</button>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-[10px] uppercase font-bold text-gray-500">
-                    <thead>
-                        <tr class="border-b border-gray-800">
-                            <th class="pb-3">Kle</th>
-                            <th class="pb-3">Estati</th>
-                            <th class="pb-3">Ekspirasyon</th>
-                            <th class="pb-3 text-right">Aksyon</th>
-                        </tr>
-                    </thead>
-                    <tbody id="key-table-body" class="text-white normal-case font-medium">
-                        <!-- Keys will appear here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- TUTORIAL SECTION -->
-        <div class="glass-card tutorial-card">
-            <h3 class="text-purple-400 font-bold mb-3"><i class="fas fa-book-open mr-2"></i> Tutorial Admin</h3>
-            <div class="bg-black/20 p-4 rounded-xl text-xs text-gray-400 leading-relaxed">
-                <p class="mb-2">1. Chwazi kantite jou ou vle bay kliyan an.</p>
-                <p class="mb-2">2. Klike sou <b>Create Key</b> pou jenere yon kle inik.</p>
-                <p>3. Kopye kle a nan tablo a epi voye l bay kliyan an pou l mete nan paj index li a.</p>
-            </div>
-            <div class="mt-4 flex gap-2">
-                <div class="flex-1 bg-[#1e253a] p-3 rounded-lg text-center text-[10px] text-gray-500">
-                    <i class="fab fa-youtube text-red-500 block text-lg mb-1"></i> Video Tuto disp...
-                </div>
-                <div class="flex-1 bg-[#1e253a] p-3 rounded-lg text-center text-[10px] text-gray-500">
-                    <i class="fas fa-info-circle text-cyan-500 block text-lg mb-1"></i> Lòt Tuto disp...
-                </div>
-            </div>
-        </div>
-
+    <div class="card">
+        <h3>⚡ Jenere Kle FAKE</h3>
+        <label>Chwazi Durasyon</label>
+        <select id="duration">
+            <option value="1">1 Jou</option>
+            <option value="30">30 Jou</option>
+        </select>
+        <button onclick="generateKey()">Generate Key</button>
+        <div id="keyDisplay" class="generated-key-box"></div>
     </div>
 
-    <script>
-        const SECURITY_SALT = "FAKE_YT_2026_MASTER_SECRET";
-        let keyList = JSON.parse(localStorage.getItem('fake_yt_keys')) || [];
+    <div class="card">
+        <h3>📋 Lis Kle ki Sove</h3>
+        <div id="keyList"></div>
+    </div>
+</div>
 
-        function generateKey() {
-            const d = document.getElementById('duration').value;
-            const p1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-            const p2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-            const signature = btoa(SECURITY_SALT + d + "VALID").substring(2, 6).toUpperCase();
-            
-            const finalKey = `FAKE-${p1}-${p2}`; // Nou ka itilize fòma sa oswa fòma siyati a
-            const expiryDate = new Date();
-            expiryDate.setDate(expiryDate.getDate() + parseInt(d));
+<script>
+    function makeRandomCode() {
+        const chars = 'ABCDEFGHJKLMNOPQRSTUVWXYZ0123456789';
+        let part1 = '', part2 = '';
+        for (let i = 0; i < 4; i++) part1 += chars.charAt(Math.floor(Math.random() * chars.length));
+        for (let i = 0; i < 4; i++) part2 += chars.charAt(Math.floor(Math.random() * chars.length));
+        return `FAKE-${part1}-${part2}`;
+    }
 
-            const newObject = {
-                key: finalKey,
-                days: d,
-                expiry: expiryDate.toLocaleDateString(),
-                timestamp: expiryDate.getTime(),
-                status: 'AKTIF'
-            };
+    function generateKey() {
+        const days = parseInt(document.getElementById('duration').value);
+        const newKey = makeRandomCode();
+        const expireDate = new Date();
+        expireDate.setDate(expireDate.getDate() + days);
 
-            keyList.unshift(newObject);
-            localStorage.setItem('fake_yt_keys', JSON.stringify(keyList));
-            
-            document.getElementById('new-key-box').classList.remove('hidden');
-            document.getElementById('new-key-text').innerText = finalKey;
-            
-            renderTable();
+        const keyData = { code: newKey, duration: days, expiresAt: expireDate.getTime(), status: 'AKTIF' };
+        let keys = JSON.parse(localStorage.getItem('vpn_keys')) || [];
+        keys.push(keyData);
+        localStorage.setItem('vpn_keys', JSON.stringify(keys));
+
+        const display = document.getElementById('keyDisplay');
+        display.innerText = newKey;
+        display.style.display = 'block';
+        loadKeys();
+    }
+
+    function loadKeys() {
+        const keyList = document.getElementById('keyList');
+        keyList.innerHTML = '';
+        let keys = JSON.parse(localStorage.getItem('vpn_keys')) || [];
+        const now = new Date().getTime();
+
+        if(keys.length === 0) {
+            keyList.innerHTML = '<div style="color:#94a3b8; text-align:center; font-size:13px; padding:10px;">Pa gen kle ki disponib.</div>';
+            return;
         }
 
-        function renderTable() {
-            const tableBody = document.getElementById('key-table-body');
-            tableBody.innerHTML = '';
-            const kounya = new Date().getTime();
+        keys.forEach((key, index) => {
+            let currentStatus = key.status;
+            if (now > key.expiresAt) currentStatus = 'EKSPIRE';
 
-            keyList.forEach((item, index) => {
-                const isExpired = kounya > item.timestamp;
-                const statusHtml = isExpired 
-                    ? `<span class="status-expired">EKSPIRE</span>` 
-                    : `<span class="status-active">AKTIF</span>`;
+            keyList.innerHTML += `
+                <div class="key-item">
+                    <div class="key-details">
+                        <div>${key.code}</div>
+                        <span class="status ${currentStatus.toLowerCase()}">${currentStatus}</span>
+                        <span style="color:#94a3b8; font-size:11px; margin-left: 8px;">${key.duration} Jou</span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteKey(${index})">🗑️</button>
+                </div>
+            `;
+        });
+    }
 
-                const row = `
-                    <tr class="border-b border-gray-800/50 hover:bg-white/[0.02]">
-                        <td class="py-4 font-mono text-purple-400 text-xs">${item.key}</td>
-                        <td class="py-4">${statusHtml}</td>
-                        <td class="py-4 text-gray-500 text-[11px]">${item.expiry}</td>
-                        <td class="py-4 text-right flex justify-end gap-2">
-                            <button onclick="copyKey('${item.key}')" class="copy-btn">Copy</button>
-                            <button onclick="deleteKey(${index})" class="text-gray-600 hover:text-red-500"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        }
-
-        function copyKey(text) {
-            navigator.clipboard.writeText(text);
-            alert("Kopye: " + text);
-        }
-
-        function deleteKey(index) {
-            if(confirm("Siprime kle sa a?")) {
-                keyList.splice(index, 1);
-                localStorage.setItem('fake_yt_keys', JSON.stringify(keyList));
-                renderTable();
-            }
-        }
-
-        // Chaje tablo a lè paj la louvri
-        renderTable();
-    </script>
+    function deleteKey(index) {
+        let keys = JSON.parse(localStorage.getItem('vpn_keys')) || [];
+        keys.splice(index, 1);
+        localStorage.setItem('vpn_keys', JSON.stringify(keys));
+        loadKeys();
+    }
+    window.onload = loadKeys;
+</script>
 </body>
 </html>
