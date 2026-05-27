@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAKE PROXY - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0c15 0%, #0f0f23 50%, #1a0a2e 100%);
+            background-attachment: fixed;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .liquid-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: 0;
+            animation: liquidFloat 20s infinite alternate ease-in-out;
+        }
+
+        .orb-1 { width: 600px; height: 600px; background: rgba(139, 92, 246, 0.25); top: -250px; left: -250px; animation-duration: 18s; }
+        .orb-2 { width: 500px; height: 500px; background: rgba(236, 72, 153, 0.2); bottom: -200px; right: -200px; animation-duration: 14s; animation-delay: -3s; }
+        .orb-3 { width: 450px; height: 450px; background: rgba(6, 182, 212, 0.15); top: 40%; left: 30%; animation-duration: 22s; animation-delay: -7s; }
+        .orb-4 { width: 350px; height: 350px; background: rgba(245, 158, 11, 0.12); bottom: 15%; right: 15%; animation-duration: 16s; animation-delay: -5s; }
+
+        @keyframes liquidFloat {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { transform: translate(40px, -30px) scale(1.1) rotate(5deg); }
+            50% { transform: translate(-30px, 40px) scale(0.95) rotate(-3deg); }
+            75% { transform: translate(20px, 20px) scale(1.05) rotate(2deg); }
+            100% { transform: translate(-15px, -15px) scale(1) rotate(0deg); }
+        }
+
+        .admin-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        .glass-card {
+            background: rgba(15, 25, 45, 0.4);
+            backdrop-filter: blur(16px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.6), rgba(15, 23, 42, 0.6));
+            backdrop-filter: blur(16px);
+            border-radius: 1.5rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .admin-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a855f7, #ec4899, #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .admin-sub {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        .proxy-config, .ip-blocker-section, .generate-section {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .config-grid, .generate-controls, .blocker-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .config-field, .input-field {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .config-field label, .input-label {
+            display: block;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+        }
+
+        .config-field input, .blocker-input, .input-field {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            border-radius: 0.75rem;
+            padding: 0.6rem 1rem;
+            color: white;
+            font-family: monospace;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #a855f7;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: #e2e8f0;
+        }
+
+        .days-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .day-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            padding: 0.6rem 1.5rem;
+            border-radius: 2rem;
+            color: #cbd5e1;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .day-btn:hover, .day-btn.active {
+            border-color: #a855f7;
+            color: #a855f7;
+        }
+
+        .day-btn.active {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-warning { background: #eab308; color: #0f172a; }
+        .btn-success { background: #22c55e; color: white; }
+        .btn-primary:hover, .btn-danger:hover, .btn-warning:hover, .btn-success:hover { transform: translateY(-1px); }
+
+        .table-container {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 1.5rem;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 1rem; background: rgba(15, 23, 42, 0.6); color: #cbd5e1; font-size: 0.75rem; border-bottom: 1px solid rgba(51, 65, 85, 0.8); }
+        td { padding: 0.8rem 1rem; border-bottom: 1px solid rgba(51, 65, 85, 0.5); color: #e2e8f0; font-size: 0.8rem; }
+        tr:hover { background: rgba(51, 65, 85, 0.4); }
+        .key-code { font-family: monospace; font-weight: 600; color: #c084fc; }
+        .status-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 50px; font-size: 0.65rem; font-weight: 600; }
+        .status-active { background: #22c55e20; color: #22c55e; border: 1px solid #22c55e40; }
+        .status-inactive { background: #ef444420; color: #ef4444; border: 1px solid #ef444440; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 1rem; margin: 0 0.2rem; padding: 0.2rem 0.4rem; border-radius: 0.4rem; transition: all 0.2s; }
+        .action-btn:hover { background: #475569; }
+        .copy-key-btn { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 0.2rem 0.5rem; border-radius: 0.4rem; color: #94a3b8; }
+        .copy-key-btn:hover { background: #475569; color: #c084fc; }
+        .blocked-ip-tag { background: rgba(220, 38, 38, 0.2); border: 1px solid rgba(220, 38, 38, 0.4); border-radius: 2rem; padding: 0.3rem 0.8rem; font-size: 0.8rem; font-family: monospace; color: #ef4444; display: inline-flex; align-items: center; gap: 0.5rem; margin: 0.2rem; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; border-left: 4px solid #22c55e; padding: 0.8rem 1.2rem; border-radius: 0.5rem; color: white; font-size: 0.85rem; z-index: 1000; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @media (max-width: 768px) { body { padding: 1rem; } th, td { padding: 0.5rem; font-size: 0.7rem; } }
+    </style>
+</head>
+<body>
+    <div class="liquid-orb orb-1"></div>
+    <div class="liquid-orb orb-2"></div>
+    <div class="liquid-orb orb-3"></div>
+    <div class="liquid-orb orb-4"></div>
+
+    <div class="admin-container">
+        <div class="admin-header glass-card">
+            <div class="admin-title">🔐 FAKE PROXY - ADMIN</div>
+            <div class="admin-sub">Manage keys • Track IPs • IP Blocker</div>
+        </div>
+
+        <div class="proxy-config glass-card">
+            <div class="section-title">🌐 PROXY CONFIGURATION</div>
+            <div class="config-grid">
+                <div class="config-field">
+                    <label>IP ADDRESS</label>
+                    <input type="text" id="proxyIP" value="150.679.09.123">
+                </div>
+                <div class="config-field">
+                    <label>PORT</label>
+                    <input type="text" id="proxyPort" value="2000">
+                </div>
+                <button class="btn btn-primary" id="updateProxyBtn">🔄 Update</button>
+            </div>
+        </div>
+
+        <div class="ip-blocker-section glass-card">
+            <div class="section-title">🚫 IP BLOCKER</div>
+            <div class="blocker-input-group">
+                <input type="text" id="blockIPInput" class="blocker-input" placeholder="Enter IP to block" style="flex:1">
+                <button class="btn btn-danger" id="blockIPBtn">🔨 Block IP</button>
+            </div>
+            <div id="blockedIPsList" style="margin-top: 1rem;"></div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card glass-card"><div class="stat-value" id="totalKeys">0</div><div class="stat-label">Total Keys</div></div>
+            <div class="stat-card glass-card"><div class="stat-value" id="activeKeys">0</div><div class="stat-label">Active Keys</div></div>
+            <div class="stat-card glass-card"><div class="stat-value" id="boundKeys">0</div><div class="stat-label">IP Bound</div></div>
+            <div class="stat-card glass-card"><div class="stat-value" id="expiredKeys">0</div><div class="stat-label">Expired</div></div>
+            <div class="stat-card glass-card"><div class="stat-value" id="blockedIPsCount">0</div><div class="stat-label">Blocked IPs</div></div>
+        </div>
+
+        <div class="generate-section glass-card">
+            <div class="section-title">🔑 GENERATE KEYS</div>
+            <div class="days-buttons">
+                <button class="day-btn" data-days="1">📅 1 Day</button>
+                <button class="day-btn" data-days="7">📅 7 Days</button>
+                <button class="day-btn active" data-days="30">📅 30 Days</button>
+            </div>
+            <div class="generate-controls">
+                <div class="input-field" style="flex:0 0 100px">
+                    <label>QUANTITY</label>
+                    <input type="number" id="genQuantity" value="1" min="1" max="20" style="width:80px; background:rgba(15,23,42,0.8); border:1px solid #334155; border-radius:0.75rem; padding:0.6rem; color:white">
+                </div>
+                <button class="btn btn-primary" id="generateBtn">✨ Generate</button>
+                <button class="btn btn-warning" id="refreshBtn">🔄 Refresh</button>
+                <button class="btn btn-danger" id="clearAllBtn">🗑 Clear All</button>
+            </div>
+        </div>
+
+        <div class="table-container glass-card">
+            <table>
+                <thead>
+                    <tr><th>Key</th><th>Status</th><th>Expiry</th><th>Activated IP</th><th>Device IP</th><th>Activated At</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="keysTableBody"><tr><td colspan="7" style="text-align:center;">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'fake_proxy_licenses';
+        const PROXY_CONFIG_KEY = 'fake_proxy_config';
+        const BLOCKED_IPS_KEY = 'fake_proxy_blocked_ips';
+        let selectedDays = 30;
+
+        function randomSegment(len=4) { const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let r=''; for(let i=0;i<len;i++) r+=chars[Math.floor(Math.random()*chars.length)]; return r; }
+        function generateLicenseKey() { return `FAKE-${randomSegment(4)}-${randomSegment(4)}`; }
+        function getExpiryDate(days) { const d=new Date(); d.setDate(d.getDate()+days); return `${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`; }
+        
+        function loadLicenses() { const s=localStorage.getItem(STORAGE_KEY); return s?JSON.parse(s):[]; }
+        function saveLicenses(l) { localStorage.setItem(STORAGE_KEY,JSON.stringify(l)); }
+        function loadBlockedIPs() { const s=localStorage.getItem(BLOCKED_IPS_KEY); return s?JSON.parse(s):[]; }
+        function saveBlockedIPs(b) { localStorage.setItem(BLOCKED_IPS_KEY,JSON.stringify(b)); }
+        function loadProxyConfig() { const s=localStorage.getItem(PROXY_CONFIG_KEY); return s?JSON.parse(s):{ip:"150.679.09.123",port:"2000"}; }
+        function saveProxyConfig(c) { localStorage.setItem(PROXY_CONFIG_KEY,JSON.stringify(c)); }
+
+        function blockIP(ip) {
+            if(!ip) return;
+            let blocked=loadBlockedIPs();
+            if(!blocked.includes(ip)){ blocked.push(ip); saveBlockedIPs(blocked); renderBlockedIPs(); updateStats(); renderTable(); showToast(`🚫 IP ${ip} blocked`); }
+            else showToast(`⚠️ Already blocked`,true);
+        }
+
+        function unblockIP(ip) { let blocked=loadBlockedIPs().filter(b=>b!==ip); saveBlockedIPs(blocked); renderBlockedIPs(); updateStats(); renderTable(); showToast(`✅ IP ${ip} unblocked`); }
+
+        function renderBlockedIPs() {
+            const container=document.getElementById('blockedIPsList');
+            const blocked=loadBlockedIPs();
+            if(blocked.length===0){ container.innerHTML='<div style="color:#94a3b8; font-size:0.75rem;">No blocked IPs</div>'; return; }
+            container.innerHTML=blocked.map(ip=>`<div class="blocked-ip-tag">🔒 ${ip}<button onclick="unblockIP('${ip}')" style="background:none;border:none;color:#ef4444;cursor:pointer;">✖</button></div>`).join('');
+        }
+
+        function generateKeys(count, days) {
+            let licenses=loadLicenses();
+            let newKeys=[];
+            for(let i=0;i<count;i++){
+                let newKey; let exists=true;
+                do{ newKey=generateLicenseKey(); exists=licenses.some(l=>l.key===newKey); }while(exists);
+                newKeys.push({key:newKey, status:'active', expiryDate:getExpiryDate(days), boundIP:null, deviceIP:null, activatedAt:null});
+            }
+            saveLicenses([...licenses,...newKeys]);
+            renderTable(); updateStats(); showToast(`✅ ${count} key(s) generated (${days} days)`);
+        }
+
+        function deleteKey(k) { let licenses=loadLicenses().filter(l=>l.key!==k); saveLicenses(licenses); renderTable(); updateStats(); showToast(`🗑 Key deleted`); }
+        function toggleStatus(k) { let licenses=loadLicenses(); let l=licenses.find(lic=>lic.key===k); if(l){ l.status=l.status==='active'?'inactive':'active'; saveLicenses(licenses); renderTable(); updateStats(); showToast(`📌 Key is now ${l.status}`); } }
+        function unbindIP(k) { let licenses=loadLicenses(); let l=licenses.find(lic=>lic.key===k); if(l){ l.boundIP=null; l.deviceIP=null; saveLicenses(licenses); renderTable(); updateStats(); showToast(`🔓 IP unbinded`); } }
+        function clearAllKeys() { if(confirm('Delete ALL keys?')){ saveLicenses([]); renderTable(); updateStats(); showToast('🗑 All deleted'); } }
+
+        function updateStats() {
+            let licenses=loadLicenses();
+            let blocked=loadBlockedIPs();
+            let total=licenses.length;
+            let today=new Date();
+            let active=licenses.filter(l=>{ if(l.status!=='active') return false; let p=l.expiryDate.split('/'); let e=new Date(p[2],p[0]-1,p[1]); return e>=today; }).length;
+            let bound=licenses.filter(l=>l.boundIP).length;
+            let expired=licenses.filter(l=>{ if(l.status!=='active') return false; let p=l.expiryDate.split('/'); let e=new Date(p[2],p[0]-1,p[1]); return e<today; }).length;
+            document.getElementById('totalKeys').textContent=total;
+            document.getElementById('activeKeys').textContent=active;
+            document.getElementById('boundKeys').textContent=bound;
+            document.getElementById('expiredKeys').textContent=expired;
+            document.getElementById('blockedIPsCount').textContent=blocked.length;
+        }
+
+        function renderTable() {
+            let licenses=loadLicenses();
+            let tbody=document.getElementById('keysTableBody');
+            if(licenses.length===0){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;">No keys yet. Generate some!</td></tr>'; return; }
+            let today=new Date();
+            tbody.innerHTML=licenses.map(lic=>{
+                let p=lic.expiryDate.split('/');
+                let expiry=new Date(p[2],p[0]-1,p[1]);
+                let isExpired=expiry<today;
+                let displayStatus= (lic.status!=='active' || isExpired) ? 'inactive' : 'active';
+                let statusClass=displayStatus==='active'?'status-active':'status-inactive';
+                let statusText=displayStatus==='active'?'ACTIVE':'INACTIVE';
+                return `<tr>
+                    <td class="key-code">${lic.key}<button class="copy-key-btn" onclick="copyKey('${lic.key}')">📋</button></td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${lic.expiryDate}${isExpired?' ⚠️':''}</td>
+                    <td>${lic.boundIP || '—'}</td>
+                    <td>${lic.deviceIP || '—'}</td>
+                    <td>${lic.activatedAt || '—'}</td>
+                    <td><button class="action-btn" onclick="toggleStatus('${lic.key}')">🔄</button><button class="action-btn" onclick="unbindIP('${lic.key}')">🔓</button><button class="action-btn" onclick="deleteKey('${lic.key}')">🗑</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function copyKey(key){ navigator.clipboard.writeText(key); showToast(`📋 Copied: ${key}`); }
+        function showToast(msg,isError=false){ let t=document.querySelector('.toast'); if(t) t.remove(); let toast=document.createElement('div'); toast.className='toast'; toast.style.borderLeftColor=isError?'#ef4444':'#22c55e'; toast.textContent=msg; document.body.appendChild(toast); setTimeout(()=>toast.remove(),3000); }
+
+        function updateProxyConfig(){ let ip=document.getElementById('proxyIP').value; let port=document.getElementById('proxyPort').value; saveProxyConfig({ip,port}); showToast(`✅ Proxy updated to ${ip}:${port}`); }
+
+        document.querySelectorAll('.day-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); selectedDays=parseInt(btn.dataset.days); }); });
+        document.getElementById('generateBtn').onclick=()=>{ let qty=parseInt(document.getElementById('genQuantity').value)||1; generateKeys(Math.min(qty,20),selectedDays); };
+        document.getElementById('refreshBtn').onclick=()=>{ renderTable(); updateStats(); renderBlockedIPs(); showToast('🔄 Refreshed'); };
+        document.getElementById('clearAllBtn').onclick=clearAllKeys;
+        document.getElementById('updateProxyBtn').onclick=updateProxyConfig;
+        document.getElementById('blockIPBtn').onclick=()=>{ let ip=document.getElementById('blockIPInput').value.trim(); if(ip){ blockIP(ip); document.getElementById('blockIPInput').value=''; }else showToast('❌ Enter IP',true); };
+        
+        window.unblockIP=unblockIP; window.copyKey=copyKey; window.toggleStatus=toggleStatus; window.unbindIP=unbindIP; window.deleteKey=deleteKey;
+        
+        function initProxyDisplay(){ let c=loadProxyConfig(); document.getElementById('proxyIP').value=c.ip; document.getElementById('proxyPort').value=c.port; }
+        initProxyDisplay(); renderBlockedIPs(); renderTable(); updateStats();
+        setInterval(()=>{ renderTable(); updateStats(); renderBlockedIPs(); },3000);
+    </script>
+</body>
+  </html>
