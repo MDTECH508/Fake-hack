@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlasterX Proxy — Admin</title>
+<style>
+  :root{
+    --bg-0:#0b0c0e;
+    --glass:rgba(255,255,255,0.05);
+    --glass-border:rgba(255,255,255,0.12);
+    --grey-1:#9aa0a6;
+    --grey-2:#5f6570;
+    --cyan:#5ee7ff;
+    --violet:#c07bff;
+    --ok:#5cf0a4;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(94,231,255,0.05), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(192,123,255,0.06), transparent 45%),
+      var(--bg-0);
+    color:#e7e9ec;
+    font-family:'Segoe UI','Inter',system-ui,sans-serif;
+    min-height:100%;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:56px 24px 80px;}
+  header{text-align:center;margin-bottom:30px;}
+  h1{
+    font-size:clamp(1.8rem,4vw,2.6rem);margin:0;font-weight:800;letter-spacing:0.5px;
+    background:linear-gradient(120deg,var(--cyan),var(--violet));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub-h{color:var(--grey-1);font-size:0.85rem;letter-spacing:1.5px;text-transform:uppercase;margin-top:6px;}
+
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
+    border:1px solid var(--glass-border);
+    border-radius:20px;padding:28px;
+    backdrop-filter:blur(18px) saturate(140%);
+    box-shadow:0 25px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+    margin-bottom:22px;
+  }
+  .panel h2{margin:0 0 6px;font-size:1.05rem;}
+  .panel p.sub{margin:0 0 18px;color:var(--grey-1);font-size:0.85rem;}
+
+  .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;}
+  .plan-btn{
+    background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;
+    padding:18px 10px;color:#eef0f2;text-align:center;cursor:pointer;
+    transition:border-color .2s, transform .15s, background .2s;
+  }
+  .plan-btn:hover{border-color:var(--cyan);background:rgba(255,255,255,0.09);}
+  .plan-btn:active{transform:scale(0.97);}
+  .plan-btn.selected{border-color:var(--violet);box-shadow:0 0 0 2px rgba(192,123,255,0.25);}
+  .plan-btn .num{font-size:1.4rem;font-weight:800;display:block;}
+  .plan-btn .lab{font-size:0.72rem;color:var(--grey-1);text-transform:uppercase;letter-spacing:1px;}
+
+  button.generate{
+    margin-top:18px;width:100%;
+    background:linear-gradient(120deg,var(--cyan),var(--violet));
+    color:#0b0c0e;border:none;border-radius:12px;padding:14px;
+    font-weight:700;font-size:0.95rem;cursor:pointer;
+  }
+  button.generate:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .result{
+    display:none;margin-top:20px;padding:20px;border-radius:14px;
+    background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);text-align:center;
+  }
+  .result.show{display:block;animation:reveal .3s ease;}
+  @keyframes reveal{from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);}}
+  .result .code{
+    font-size:1.6rem;font-weight:800;letter-spacing:2px;margin:6px 0 10px;
+    background:linear-gradient(120deg,var(--violet),var(--cyan));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .result .meta{color:var(--grey-1);font-size:0.8rem;}
+
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.85rem;}
+  th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--glass-border);}
+  th{color:var(--grey-2);font-weight:600;font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;}
+  td.mono{font-family:'Courier New',monospace;letter-spacing:0.5px;}
+  .status-ok{color:var(--ok);}
+  .status-exp{color:#ff6b6b;}
+  .empty-row td{color:var(--grey-2);text-align:center;padding:20px;}
+
+  footer{text-align:center;color:var(--grey-2);font-size:0.75rem;margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>BlasterX Proxy · Admin</h1>
+    <div class="sub-h">License Key Generator</div>
+  </header>
+
+  <section class="panel">
+    <h2>Generate a Key</h2>
+    <p class="sub">Choose a validity period, then generate a license key. It's stored automatically and can be validated on the main site.</p>
+    <div class="plan-grid" id="planGrid">
+      <div class="plan-btn" data-days="1"><span class="num">1</span><span class="lab">Day</span></div>
+      <div class="plan-btn" data-days="7"><span class="num">7</span><span class="lab">Days</span></div>
+      <div class="plan-btn" data-days="15"><span class="num">15</span><span class="lab">Days</span></div>
+      <div class="plan-btn" data-days="30"><span class="num">30</span><span class="lab">Days</span></div>
+    </div>
+    <button class="generate" id="generateBtn" disabled>Generate License Key</button>
+
+    <div class="result" id="resultBox">
+      <div style="color:var(--grey-1);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;">New Key</div>
+      <div class="code" id="resultCode">—</div>
+      <div class="meta" id="resultMeta">—</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Recent Keys</h2>
+    <p class="sub">Keys generated from this browser (shared storage). Refresh the list any time.</p>
+    <button class="btn-refresh generate" id="refreshBtn" style="background:var(--glass);color:#eef0f2;border:1px solid var(--glass-border);">Refresh List</button>
+    <table>
+      <thead>
+        <tr><th>Key</th><th>Plan</th><th>Expires</th><th>Status</th></tr>
+      </thead>
+      <tbody id="keyTableBody">
+        <tr class="empty-row"><td colspan="4">No keys loaded yet.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>Shared storage note: generated keys are stored in shared app storage so the main BlasterX Proxy site can read and validate them. Anyone using this artifact can see the key list.</footer>
+</div>
+
+<script>
+  const planGrid = document.getElementById('planGrid');
+  const generateBtn = document.getElementById('generateBtn');
+  const resultBox = document.getElementById('resultBox');
+  const resultCode = document.getElementById('resultCode');
+  const resultMeta = document.getElementById('resultMeta');
+  const keyTableBody = document.getElementById('keyTableBody');
+  const refreshBtn = document.getElementById('refreshBtn');
+
+  let selectedDays = null;
+
+  planGrid.querySelectorAll('.plan-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      planGrid.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedDays = parseInt(btn.dataset.days, 10);
+      generateBtn.disabled = false;
+    });
+  });
+
+  function randomSuffix(len){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for(let i=0;i<len;i++){ out += chars[Math.floor(Math.random()*chars.length)]; }
+    return out;
+  }
+
+  async function generateKey(days){
+    const suffix = randomSuffix(4).toLowerCase();
+    const code = `BLAST-${suffix}-${days}D`.toUpperCase();
+    const now = Date.now();
+    const record = {
+      planDays: days,
+      createdAt: now,
+      expiresAt: now + days * 86400000
+    };
+    await window.storage.set('license:' + code, JSON.stringify(record), true);
+
+    // maintain an index of all generated keys for the admin table
+    let indexList = [];
+    try {
+      const existing = await window.storage.get('license-index', true);
+      indexList = JSON.parse(existing.value);
+    } catch(e) { indexList = []; }
+    indexList.push(code);
+    await window.storage.set('license-index', JSON.stringify(indexList), true);
+
+    return { code, record };
+  }
+
+  generateBtn.addEventListener('click', async () => {
+    if(!selectedDays) return;
+    generateBtn.disabled = true;
+    generateBtn.textContent = 'Generating...';
+    try {
+      const { code, record } = await generateKey(selectedDays);
+      resultCode.textContent = code;
+      resultMeta.textContent = `Valid for ${record.planDays} day(s) — expires ${new Date(record.expiresAt).toLocaleString()}`;
+      resultBox.classList.add('show');
+      await loadKeyTable();
+    } catch(err) {
+      resultMeta.textContent = 'Could not generate key. Try again.';
+      resultBox.classList.add('show');
+    }
+    generateBtn.disabled = false;
+    generateBtn.textContent = 'Generate License Key';
+  });
+
+  async function loadKeyTable(){
+    keyTableBody.innerHTML = '<tr class="empty-row"><td colspan="4">Loading...</td></tr>';
+    try {
+      const existing = await window.storage.get('license-index', true);
+      const codes = JSON.parse(existing.value);
+      if(!codes.length){
+        keyTableBody.innerHTML = '<tr class="empty-row"><td colspan="4">No keys yet.</td></tr>';
+        return;
+      }
+      const rows = [];
+      for(const code of codes.slice(-25).reverse()){
+        try {
+          const rec = await window.storage.get('license:' + code, true);
+          const data = JSON.parse(rec.value);
+          const expired = Date.now() > data.expiresAt;
+          rows.push(`<tr>
+            <td class="mono">${code}</td>
+            <td>${data.planDays}d</td>
+            <td>${new Date(data.expiresAt).toLocaleString()}</td>
+            <td class="${expired ? 'status-exp' : 'status-ok'}">${expired ? 'Expired' : 'Active'}</td>
+          </tr>`);
+        } catch(e) { /* skip missing */ }
+      }
+      keyTableBody.innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="4">No keys yet.</td></tr>';
+    } catch(err) {
+      keyTableBody.innerHTML = '<tr class="empty-row"><td colspan="4">No keys yet.</td></tr>';
+    }
+  }
+
+  refreshBtn.addEventListener('click', loadKeyTable);
+  loadKeyTable();
+</script>
+</body>
+</html>
