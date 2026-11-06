@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESP / Hologram</title>
+<style>
+  html,body{margin:0;height:100%;background:#03070a;overflow:hidden;font-family:system-ui,sans-serif}
+  canvas{position:fixed;inset:0;width:100%;height:100%}
+  .hud{position:fixed;top:10px;left:12px;z-index:3;color:#00ff88;font:700 13px ui-monospace,monospace;text-shadow:0 0 8px #00ff8899}
+  .bar{position:fixed;top:8px;right:10px;z-index:3;display:flex;gap:6px}
+  .bar button{background:#0e151d;border:1px solid #1b2734;color:#8b9bb0;border-radius:8px;padding:7px 10px;font:700 11px ui-monospace,monospace}
+  .bar button.on{background:#00e5ff;color:#00131a;border-color:#00e5ff}
+  input{background:#0b1219;border:1px solid #1b2734;color:#dfe9f3;border-radius:6px;padding:5px 7px;font:11px monospace;width:150px}
+</style>
+</head>
+<body>
+<div class="hud" id="cnt">ENEMIES: 0</div>
+<div class="bar">
+  <input id="src" value="./intel.json">
+  <button id="bEsp" class="on">ESP</button>
+  <button id="bHolo">HOLO</button>
+</div>
+<canvas id="c"></canvas>
+<script>
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let intel = { count:0, list:[] }, esp = true, holo = false;
+
+function fit(){
+  cv.width = innerWidth * devicePixelRatio;
+  cv.height = innerHeight * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+addEventListener('resize', fit); fit();
+
+bEsp.onclick = e => { esp = !esp; e.target.classList.toggle('on', esp); };
+bHolo.onclick = e => { holo = !holo; e.target.classList.toggle('on', holo); };
+src.onchange = pull;
+
+function demo(){
+  const n = 3 + (Math.random()*3|0), L = [];
+  for (let i=0;i<n;i++) L.push({
+    name:'enemy_'+(i+1), hp:25+Math.random()*75, dist:6+Math.random()*110,
+    x:0.12+Math.random()*0.76, y:0.26+Math.random()*0.36,
+    w:0.05+Math.random()*0.03, h:0.11+Math.random()*0.06
+  });
+  return { count:n, list:L };
+}
+
+async function pull(){
+  try{
+    const r = await fetch(src.value + '?t=' + Date.now(), {cache:'no-store'});
+    const j = await r.json();
+    intel = (j.list && j.list.length) ? j : demo();
+  }catch(e){ intel = demo(); }
+}
+pull(); setInterval(pull, 1200);
+
+function corners(x,y,w,h,t,col){
+  const l = Math.max(9, w*0.3);
+  ctx.strokeStyle = col; ctx.lineWidth = t; ctx.beginPath();
+  const s=(cx,cy,dx,dy)=>{ctx.moveTo(cx,cy);ctx.lineTo(cx+dx,cy+dy);};
+  s(x,y,l,0); s(x,y,0,l); s(x+w,y,-l,0); s(x+w,y,0,l);
+  s(x,y+h,l,0); s(x,y+h,0,-l); s(x+w,y+h,-l,0); s(x+w,y+h,0,-l);
+  ctx.stroke();
+}
+
+function hologram(x,y,w,h,col){
+  ctx.save();
+  ctx.shadowColor = col; ctx.shadowBlur = 16;
+  corners(x,y,w,h,1.6,col);
+  ctx.shadowBlur = 0; ctx.globalAlpha = 0.26; ctx.strokeStyle = col; ctx.lineWidth = 1;
+  for (let yy=y; yy<y+h; yy+=5){ ctx.beginPath(); ctx.moveTo(x,yy); ctx.lineTo(x+w,yy); ctx.stroke(); }
+  ctx.globalAlpha = 0.6; ctx.fillStyle = col;
+  ctx.fillRect(x, y + ((performance.now()*0.06) % h), w, 2);
+  ctx.globalAlpha = 0.55; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.ellipse(x+w/2, y+h, w*0.62, w*0.16, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.restore();
+}
+
+function draw(){
+  ctx.clearRect(0,0,innerWidth,innerHeight);
+  const L = (intel.list||[]).slice(0,32);
+  let near = null;
+
+  L.forEach(e=>{
+    const x = e.x*innerWidth, y = e.y*innerHeight;
+    const w = Math.max(18,(e.w||0.05)*innerWidth);
+    const h = Math.max(34,(e.h||0.12)*innerHeight);
+
+    if (esp){
+      corners(x-w/2, y-h, w, h, 2, '#00ff88');
+      if (typeof e.hp === 'number'){
+        const bx = x-w/2-7, pct = Math.min(100,e.hp)/100;
+        ctx.fillStyle = '#000000aa'; ctx.fillRect(bx, y-h, 3, h);
+        ctx.fillStyle = '#ff3b30';   ctx.fillRect(bx, y-h+h*(1-pct), 3, h*pct);
+      }
+      if (e.name){
+        ctx.font='700 12px ui-monospace,monospace'; ctx.fillStyle='#fff'; ctx.textAlign='center';
+        ctx.fillText(String(e.name), x, y-h-16);
+      }
+      if (typeof e.dist === 'number'){
+        ctx.font='700 11px ui-monospace,monospace'; ctx.fillStyle='#ffd400'; ctx.textAlign='center';
+        ctx.fillText(e.dist.toFixed(1)+' m', x, y-h-4);
+        if (!near || e.dist < near.dist) near = e;
+      }
+    }
+    if (holo) hologram(x-w/2, y-h, w, h, '#00e5ff');
+  });
+
+  if (esp && near){
+    ctx.strokeStyle='#ff00ff'; ctx.lineWidth=1; ctx.beginPath();
+    ctx.moveTo(innerWidth/2, innerHeight/2);
+    ctx.lineTo(near.x*innerWidth, near.y*innerHeight - (near.h||0.12)*innerHeight/2);
+    ctx.stroke();
+  }
+
+  cnt.textContent = 'ENEMIES: ' + (intel.count ?? L.length) + (near ? '  |  '+near.dist.toFixed(1)+'m' : '');
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
