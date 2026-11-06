@@ -1,58 +1,55 @@
 {
-  "meta": { "name": "Aim Universal", "version": "2.0.0", "updated": "2026-11-06" },
+  "meta": { "name": "Aim Universal", "version": "2.1.0", "updated": "2026-11-06", "base": "https://fake-hack-three.vercel.app" },
 
   "injector": { "enabled": true },
 
+  "network": {
+    "mode": "allowlist",
+    "allowlist": ["fake-hack-three.vercel.app", "https://freefiremobile-a.akamaihd.net"],
+    "blocklist": ["/login", "/auth", "/oauth", "/pay", "/payment", "/purchase", "/.well-known", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".mp4", ".mp3", ".ttf", ".otf", ".woff", ".wss"],
+    "allowRegex": "",
+    "onlyIfJson": true,
+    "onlyIfEnemies": true,
+    "skipStatusAbove": 399,
+    "maxBodyKB": 512,
+    "passthroughOnError": true,
+    "headerTag": true
+  },
+
+  "games": {
+    "active": "com.dts.freefireth",
+    "profiles": {
+      "com.myapp.xom": { "allowlist": ["api.myapp.com"], "enemyPath": "", "myTeam": null, "hitbox": "head" },
+      "com.other.game": { "allowlist": ["match.othergame.com"], "enemyPath": "data.units", "myTeam": 2, "hitbox": "chest" }
+    }
+  },
+
   "aimbot": {
-    "enabled": true,
-    "fov": 150,
-    "fovMode": "degrees",
-    "mode": "fov",
-    "hitbox": "head",
-    "hitboxOptions": ["head", "chest"],
+    "enabled": true, "fov": 150, "fovMode": "degrees", "mode": "fov",
+    "hitbox": "head", "hitboxOptions": ["head", "chest"],
     "hitboxOffsets": { "head": 0.0, "chest": -0.28, "pelvis": -0.65 },
-    "pivot": "feet",
-    "smooth": 0.35,
-    "maxDistance": 300,
-    "maxTargets": 1,
-    "ignoreTeammates": true,
-    "ignoreKnocked": true,
+    "pivot": "feet", "smooth": 0.35, "maxDistance": 300, "maxTargets": 1,
+    "ignoreTeammates": true, "ignoreKnocked": true,
     "priority": ["fov", "distance"],
     "prediction": { "enabled": true, "bulletSpeed": 800 },
     "triggerBot": { "enabled": false, "delayMs": 60 }
   },
 
   "esp": {
-    "enabled": true,
-    "maxEnemies": 32,
-    "box":       { "enabled": true, "style": "corner", "thickness": 2, "color": "#00FF88" },
-    "name":      { "enabled": true, "color": "#FFFFFF" },
-    "distance":  { "enabled": true, "unit": "m", "maxRender": 400, "color": "#FFD400" },
-    "hpBar":     { "enabled": true, "color": "#FF3B30" },
-    "count":     { "enabled": true, "text": "ENEMIES: {n}" },
-    "aimLine":   { "enabled": true, "color": "#FF00FF" },
+    "enabled": true, "maxEnemies": 32,
+    "box": { "enabled": true, "color": "#00FF88" },
+    "name": { "enabled": true }, "distance": { "enabled": true }, "hpBar": { "enabled": true },
+    "count": { "enabled": true }, "aimLine": { "enabled": true },
     "fovCircle": { "enabled": true, "color": "#00C8FF" }
   },
 
-  "hologram": {
-    "enabled": false, "mode": "wireframe", "color": "#00E5FF",
-    "glow": 14, "scanlines": true, "skeleton": true, "groundRing": true, "pulse": true
-  },
+  "hologram": { "enabled": false, "mode": "wireframe", "color": "#00E5FF", "glow": 14, "scanlines": true },
 
   "mapping": {
-    "enemyPath": "",
-    "selfPath": "",
-    "forwardPath": "",
-    "localPosition": null,
-    "localForward": null,
-    "myTeam": null,
+    "enemyPath": "", "selfPath": "", "forwardPath": "",
+    "localPosition": null, "localForward": null, "myTeam": null,
     "mockConfigPath": "/aimbot/config.json"
   },
 
-  "inject": {
-    "enabled": true,
-    "intelField": "__aimbot",
-    "aimField": "__aim",
-    "trimList": false
+  "inject": { "enabled": true, "intelField": "__aimbot", "aimField": "__aim", "trimList": false }
   }
-}
