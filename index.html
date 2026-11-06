@@ -3,217 +3,588 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Universal Aim Config Pro</title>
+<title>Config Menu — Universal Aim</title>
 <style>
-  *{box-sizing:border-box}
-  body{margin:0;background:#070b10;color:#dfe9f3;font:14px system-ui;padding:16px;max-width:640px;margin:0 auto}
-  h1{font-size:13px;letter-spacing:.16em;color:#00ff88;margin:0 0 16px;text-transform:uppercase}
-  h2{font-size:11px;letter-spacing:.1em;color:#7d8ea3;margin:20px 0 8px;text-transform:uppercase}
-  .b{padding:12px 14px;border-radius:12px;border:1px solid #1b2734;background:#0e151d;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .sw{padding:8px 12px;border-radius:8px;font:700 11px monospace;border:1px solid #24333f;background:#101a23;color:#6c7e90;cursor:pointer;min-width:56px;text-align:center;user-select:none}
-  .sw.on{background:#00ff88;color:#04120a;border-color:#00ff88}
-  .row{display:flex;gap:8px}
-  .row .sw{flex:1}
-  .speed-row{display:flex;gap:8px;flex-wrap:wrap}
-  .speed-row .sw{flex:1;min-width:100px;padding:10px 8px;font-size:10px;line-height:1.3;height:auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px}
-  .speed-row .sw .lbl{font-size:9px;opacity:0.7}
-  .speed-row .sw.slow.on{background:#00C8FF;border-color:#00C8FF;color:#00131a}
-  .speed-row .sw.normal.on{background:#00FF88;border-color:#00FF88;color:#04120a}
-  .speed-row .sw.moderate.on{background:#FFAA00;border-color:#FFAA00;color:#1a1000}
-  .speed-row .sw.fast.on{background:#FF3366;border-color:#FF3366;color:#fff}
-  input[type=range]{width:120px}
-  .val{font:11px monospace;color:#00c8ff;min-width:40px;text-align:right}
-  .stats{font:11px monospace;color:#7d8ea3;margin-top:10px;line-height:1.7}
-  .warning{background:#2a1015;border:1px solid #ff3366;border-radius:8px;padding:10px;margin-top:10px;font:11px monospace;color:#ff8090;line-height:1.6}
-  .noclip-row .sw{background:#101a23;border-color:#FF00FF;color:#FF00FF}
-  .noclip-row .sw.on{background:#FF00FF;color:#fff;border-color:#FF00FF}
+  :root {
+    --bg: #070b10;
+    --card: #0e151d;
+    --border: #1b2734;
+    --text: #dfe9f3;
+    --muted: #7d8ea3;
+    --green: #00ff88;
+    --cyan: #00c8ff;
+    --red: #ff3366;
+    --orange: #ffaa00;
+    --purple: #ff00ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font:14px/1.5 system-ui,-apple-system,sans-serif;
+    padding:16px;
+    max-width:720px;
+    margin:0 auto;
+    min-height:100vh;
+  }
+  h1{
+    font-size:13px;
+    letter-spacing:.18em;
+    color:var(--green);
+    text-transform:uppercase;
+    margin-bottom:4px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .subtitle{font-size:11px;color:var(--muted);margin-bottom:20px;font-family:monospace}
+
+  /* ===== CARD ===== */
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    transition:border-color .2s, transform .15s;
+  }
+  .card:hover{border-color:#2a3a4a}
+  .card.active{border-color:var(--green);background:linear-gradient(135deg,#0e151d 0%,#0a1a12 100%)}
+
+  .card-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+  .card-icon{
+    width:38px;height:38px;
+    border-radius:10px;
+    background:#101a23;
+    border:1px solid #24333f;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    transition:all .2s;
+  }
+  .card.active .card-icon{
+    background:linear-gradient(135deg,#00ff88 0%,#00c8ff 100%);
+    border-color:transparent;
+    box-shadow:0 0 16px rgba(0,255,136,.35);
+  }
+  .card-icon svg{width:20px;height:20px;stroke:#6c7e90;transition:stroke .2s}
+  .card.active .card-icon svg{stroke:#04120a}
+  .card-text{min-width:0}
+  .card-title{font-size:13px;font-weight:600;margin-bottom:2px}
+  .card-desc{font-size:11px;color:var(--muted);font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* ===== TOGGLE ===== */
+  .toggle{
+    position:relative;
+    width:52px;height:28px;
+    background:#1b2734;
+    border-radius:14px;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:background .2s;
+    border:none;
+    padding:0;
+  }
+  .toggle::after{
+    content:'';
+    position:absolute;
+    top:3px;left:3px;
+    width:22px;height:22px;
+    background:#6c7e90;
+    border-radius:50%;
+    transition:all .25s cubic-bezier(.4,0,.2,1);
+  }
+  .toggle.on{background:var(--green)}
+  .toggle.on::after{left:27px;background:#04120a}
+  .toggle.on.cyan{background:var(--cyan)}
+  .toggle.on.orange{background:var(--orange)}
+  .toggle.on.red{background:var(--red)}
+  .toggle.on.purple{background:var(--purple)}
+  .toggle.on.purple::after{background:#fff}
+
+  /* ===== SECTION HEADER ===== */
+  .section{
+    font-size:11px;
+    letter-spacing:.12em;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin:20px 0 10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .section::after{
+    content:'';flex:1;height:1px;
+    background:linear-gradient(90deg,var(--border),transparent);
+  }
+
+  /* ===== BUTTONS ===== */
+  .actions{
+    display:flex;gap:8px;
+    margin-top:20px;
+    position:sticky;
+    bottom:16px;
+    background:linear-gradient(180deg,transparent 0%,var(--bg) 30%);
+    padding:12px 0;
+  }
+  .btn{
+    flex:1;
+    padding:12px 16px;
+    border-radius:10px;
+    font:700 12px monospace;
+    cursor:pointer;
+    border:1px solid;
+    background:transparent;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:all .2s;
+  }
+  .btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+  .btn-save{border-color:var(--green);color:var(--green)}
+  .btn-save:hover{background:var(--green);color:#04120a}
+  .btn-reset{border-color:var(--red);color:var(--red)}
+  .btn-reset:hover{background:var(--red);color:#fff}
+  .btn-export{border-color:var(--cyan);color:var(--cyan)}
+  .btn-export:hover{background:var(--cyan);color:#00131a}
+
+  /* ===== TOAST ===== */
+  .toast{
+    position:fixed;
+    bottom:80px;left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:var(--green);
+    color:#04120a;
+    padding:12px 20px;
+    border-radius:10px;
+    font:700 12px monospace;
+    box-shadow:0 8px 24px rgba(0,255,136,.4);
+    opacity:0;
+    transition:all .3s;
+    pointer-events:none;
+    z-index:999;
+    display:flex;align-items:center;gap:8px;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:3}
+
+  .stats{
+    font-size:11px;
+    color:var(--muted);
+    font-family:monospace;
+    text-align:center;
+    padding:12px;
+    margin-top:8px;
+  }
 </style>
 </head>
 <body>
 
-<h1>Universal Aim Config Pro</h1>
+<h1>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M12 1v6m0 6v6M5.6 5.6l4.2 4.2m4.4 4.4l4.2 4.2M1 12h6m6 0h6M5.6 18.4l4.2-4.2m4.4-4.4l4.2-4.2"/>
+  </svg>
+  Config Menu
+</h1>
+<div class="subtitle">Universal Aim · v2.3.0</div>
 
-<h2>Aimbot</h2>
-<div class="b"><span>Aimbot</span><div class="sw" data-p="modifications.aimbot.enabled">OFF</div></div>
-<div class="b"><span>Hitbox</span>
-  <div class="row">
-    <div class="sw" data-hb="head">HEAD</div>
-    <div class="sw" data-hb="chest">CHEST</div>
-  </div>
-</div>
-<div class="b"><span>FOV (360)</span>
-  <input type="range" id="fov" min="30" max="360" step="10">
-  <span class="val" id="fov-val">360</span>
-</div>
+<!-- ===== AIMBOT ===== -->
+<div class="section">Aimbot</div>
 
-<h2>Speed — 4 Nivo</h2>
-<div class="b"><span>Speed</span><div class="sw" data-p="modifications.speed.enabled">OFF</div></div>
-<div class="b" style="flex-direction:column;align-items:stretch">
-  <div class="speed-row">
-    <div class="sw slow" data-speed="slow">
-      <span>SLOW</span>
-      <span class="lbl">×1.5</span>
+<div class="card" data-key="aimbot.enabled">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="9"/>
+        <circle cx="12" cy="12" r="3"/>
+        <line x1="12" y1="1" x2="12" y2="5"/>
+        <line x1="12" y1="19" x2="12" y2="23"/>
+        <line x1="1" y1="12" x2="5" y2="12"/>
+        <line x1="19" y1="12" x2="23" y2="12"/>
+      </svg>
     </div>
-    <div class="sw normal" data-speed="normal">
-      <span>NORMAL</span>
-      <span class="lbl">×2.0</span>
-    </div>
-    <div class="sw moderate" data-speed="moderate">
-      <span>PA TWÒ RAPID</span>
-      <span class="lbl">×2.5</span>
-    </div>
-    <div class="sw fast" data-speed="fast">
-      <span>RAPID</span>
-      <span class="lbl">×3.5</span>
+    <div class="card-text">
+      <div class="card-title">Aimbot</div>
+      <div class="card-desc">Auto aim · FOV 360</div>
     </div>
   </div>
-</div>
-<div class="b"><span>Multiplier</span>
-  <input type="range" id="speed-mult" min="1" max="5" step="0.1">
-  <span class="val" id="speed-mult-val">2.0</span>
+  <button class="toggle" data-p="aimbot.enabled"></button>
 </div>
 
-<h2>Noclip — Pase Nan Objè</h2>
-<div class="b noclip-row"><span>Pase Nan Objè</span><div class="sw" data-p="modifications.noclip.enabled">OFF</div></div>
+<div class="card" data-key="aimbot.hitbox_head">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 22c0-4 4-7 8-7s8 3 8 7"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Hitbox: Head</div>
+      <div class="card-desc">Target tèt (headshot)</div>
+    </div>
+  </div>
+  <button class="toggle cyan" data-p="aimbot.hitbox_head"></button>
+</div>
 
-<h2>ESP</h2>
-<div class="b"><span>ESP</span><div class="sw" data-p="modifications.esp.enabled">OFF</div></div>
-<div class="b"><span>Box</span><div class="sw" data-p="modifications.esp.box.enabled">OFF</div></div>
-<div class="b"><span>Name</span><div class="sw" data-p="modifications.esp.name.enabled">OFF</div></div>
-<div class="b"><span>HP Bar</span><div class="sw" data-p="modifications.esp.hpBar.enabled">OFF</div></div>
+<!-- ===== SPEED ===== -->
+<div class="section">Speed — 4 Nivo</div>
 
-<h2>Icewall & Gloo</h2>
-<div class="b"><span>Icewall</span><div class="sw" data-p="modifications.icewall.enabled">OFF</div></div>
-<div class="b"><span>Gloo</span><div class="sw" data-p="modifications.gloo.enabled">OFF</div></div>
+<div class="card" data-key="speed.enabled">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Speed Hack</div>
+      <div class="card-desc">Aktive speed (chwazi nivo anba)</div>
+    </div>
+  </div>
+  <button class="toggle orange" data-p="speed.enabled"></button>
+</div>
 
-<h2>Lock & Others</h2>
-<div class="b"><span>Lock</span><div class="sw" data-p="modifications.lock.enabled">OFF</div></div>
-<div class="b"><span>Magnetic</span><div class="sw" data-p="modifications.magnetic.enabled">OFF</div></div>
-<div class="b"><span>Prediction</span><div class="sw" data-p="modifications.prediction.enabled">OFF</div></div>
-<div class="b"><span>TriggerBot</span><div class="sw" data-p="modifications.triggerBot.enabled">OFF</div></div>
+<div class="card" data-key="speed.slow">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
+        <circle cx="12" cy="12" r="6"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Slow</div>
+      <div class="card-desc">× 1.5 · modere</div>
+    </div>
+  </div>
+  <button class="toggle cyan" data-p="speed.slow"></button>
+</div>
 
-<div class="warning">
-⚠️ <strong>Avètisman:</strong> Speed, Noclip, Icewall, ak Gloo se karakteristik jwèt la. ProxyPin pa ka modifye yo nan Free Fire. Meni sa a ap kontwole yon config JSON, pa jwèt la.
+<div class="card" data-key="speed.normal">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Normal</div>
+      <div class="card-desc">× 2.0 · balanse</div>
+    </div>
+  </div>
+  <button class="toggle" data-p="speed.normal"></button>
+</div>
+
+<div class="card" data-key="speed.moderate">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 7v5l3 3"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Pa Twò Rapid</div>
+      <div class="card-desc">× 2.5 · modere</div>
+    </div>
+  </div>
+  <button class="toggle orange" data-p="speed.moderate"></button>
+</div>
+
+<div class="card" data-key="speed.fast">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        <line x1="18" y1="4" x2="22" y2="4"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Rapid</div>
+      <div class="card-desc">× 3.5 · rapid</div>
+    </div>
+  </div>
+  <button class="toggle red" data-p="speed.fast"></button>
+</div>
+
+<!-- ===== NOCLIP ===== -->
+<div class="section">Noclip</div>
+
+<div class="card" data-key="noclip.enabled">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 3l18 18"/>
+        <rect x="3" y="3" width="8" height="8" rx="1"/>
+        <rect x="13" y="13" width="8" height="8" rx="1"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Pase Nan Objè</div>
+      <div class="card-desc">Noclip · kouri nan mi</div>
+    </div>
+  </div>
+  <button class="toggle purple" data-p="noclip.enabled"></button>
+</div>
+
+<!-- ===== ESP ===== -->
+<div class="section">ESP</div>
+
+<div class="card" data-key="esp.enabled">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">ESP</div>
+      <div class="card-desc">Wè enèmi nan mi</div>
+    </div>
+  </div>
+  <button class="toggle" data-p="esp.enabled"></button>
+</div>
+
+<div class="card" data-key="esp.box">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Box</div>
+      <div class="card-desc">Bwat alantou enèmi</div>
+    </div>
+  </div>
+  <button class="toggle cyan" data-p="esp.box"></button>
+</div>
+
+<div class="card" data-key="esp.name">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 7V5h16v2M9 7v12M15 7v12"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">Name</div>
+      <div class="card-desc">Afiche non enèmi</div>
+    </div>
+  </div>
+  <button class="toggle cyan" data-p="esp.name"></button>
+</div>
+
+<div class="card" data-key="esp.hpBar">
+  <div class="card-left">
+    <div class="card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="8" width="18" height="8" rx="2"/>
+        <rect x="6" y="10" width="8" height="4" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="card-text">
+      <div class="card-title">HP Bar</div>
+      <div class="card-desc">Bar lavi enèmi</div>
+    </div>
+  </div>
+  <button class="toggle red" data-p="esp.hpBar"></button>
+</div>
+
+<!-- ===== ACTIONS ===== -->
+<div class="actions">
+  <button class="btn btn-save" id="btn-save">
+    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    Save
+  </button>
+  <button class="btn btn-export" id="btn-export">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Export
+  </button>
+  <button class="btn btn-reset" id="btn-reset">
+    <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+    Reset
+  </button>
 </div>
 
 <div class="stats" id="stats">Loading...</div>
 
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Saved</span>
+</div>
+
 <script>
 (function(){
-  var KEY = "uaim_cfg_v3";
-  var DEFAULTS = null;
+  var STORAGE_KEY = "uaim_config_v3";
+  var DEFAULTS = {
+    aimbot: { enabled: false, hitbox_head: true },
+    speed: { enabled: false, slow: false, normal: true, moderate: false, fast: false },
+    noclip: { enabled: false },
+    esp: { enabled: false, box: true, name: true, hpBar: true }
+  };
+
   var CFG = null;
 
-  function getPath(o, p){ return p.split(".").reduce(function(a,k){ return a==null?undefined:a[k]; }, o); }
-  function setPath(o, p, v){
-    var ks = p.split("."), c = o;
-    for (var i=0;i<ks.length-1;i++){ if (!c[ks[i]] || typeof c[ks[i]] !== "object") c[ks[i]] = {}; c = c[ks[i]]; }
-    c[ks[ks.length-1]] = v;
+  // ===== Helpers =====
+  function getPath(obj, path){
+    return path.split(".").reduce(function(o,k){ return o && o[k] !== undefined ? o[k] : undefined; }, obj);
   }
-  function save(){ try { localStorage.setItem(KEY, JSON.stringify(CFG)); } catch(e){} }
-  function load(){ try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e){ return null; } }
+  function setPath(obj, path, val){
+    var ks = path.split("."), c = obj;
+    for (var i=0;i<ks.length-1;i++){
+      if (!c[ks[i]] || typeof c[ks[i]] !== "object") c[ks[i]] = {};
+      c = c[ks[i]];
+    }
+    c[ks[ks.length-1]] = val;
+  }
+  function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
 
+  // ===== Toast =====
+  var toastEl = document.getElementById("toast");
+  var toastMsg = document.getElementById("toast-msg");
+  var toastTimer = null;
+  function showToast(msg){
+    toastMsg.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 1800);
+  }
+
+  // ===== Load / Save =====
+  function loadConfig(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return deepClone(DEFAULTS);
+      var parsed = JSON.parse(raw);
+      // Merge ak defaults pou sekirite
+      var merged = deepClone(DEFAULTS);
+      Object.keys(parsed).forEach(function(k){
+        if (typeof parsed[k] === "object" && parsed[k] !== null) {
+          merged[k] = Object.assign({}, merged[k] || {}, parsed[k]);
+        } else {
+          merged[k] = parsed[k];
+        }
+      });
+      return merged;
+    } catch(e){
+      return deepClone(DEFAULTS);
+    }
+  }
+  function saveConfig(){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(CFG));
+      return true;
+    } catch(e){
+      return false;
+    }
+  }
+
+  // ===== Paint =====
   function paint(){
     if (!CFG) return;
 
-    document.querySelectorAll("[data-p]").forEach(function(el){
-      var v = getPath(CFG, el.dataset.p);
-      el.classList.toggle("on", !!v);
-      el.textContent = v ? "ON" : "OFF";
+    // Toggles
+    document.querySelectorAll("[data-p]").forEach(function(btn){
+      var path = btn.dataset.p;
+      var val = getPath(CFG, path);
+      btn.classList.toggle("on", !!val);
     });
 
-    var hb = getPath(CFG, "modifications.aimbot.hitbox") || "head";
-    document.querySelectorAll("[data-hb]").forEach(function(el){
-      el.classList.toggle("on", el.dataset.hb === hb);
+    // Cards highlight
+    document.querySelectorAll(".card[data-key]").forEach(function(card){
+      var key = card.dataset.key;
+      var btn = card.querySelector("[data-p]");
+      if (btn) {
+        card.classList.toggle("active", btn.classList.contains("on"));
+      }
     });
-
-    // Speed nivo — make selected one "on"
-    var speedMode = getPath(CFG, "modifications.speed.mode") || "normal";
-    var speedEnabled = getPath(CFG, "modifications.speed.enabled");
-    document.querySelectorAll("[data-speed]").forEach(function(el){
-      var isSelected = el.dataset.speed === speedMode;
-      el.classList.toggle("on", isSelected && speedEnabled);
-    });
-
-    // FOV slider
-    var fov = getPath(CFG, "modifications.aimbot.fov") || 360;
-    document.getElementById("fov").value = fov;
-    document.getElementById("fov-val").textContent = fov;
-
-    // Speed multiplier slider
-    var currentMode = speedMode;
-    var mult = getPath(CFG, "modifications.speed.modes." + currentMode + ".multiplier") || 2.0;
-    document.getElementById("speed-mult").value = mult;
-    document.getElementById("speed-mult-val").textContent = mult;
 
     // Stats
-    var mods = CFG.modifications || {};
-    var on = 0, total = 0;
-    Object.keys(mods).forEach(function(k){
+    var total = 0, on = 0;
+    document.querySelectorAll("[data-p]").forEach(function(btn){
       total++;
-      if (mods[k] && mods[k].enabled) on++;
+      if (btn.classList.contains("on")) on++;
     });
-    var speedLabel = getPath(CFG, "modifications.speed.modes." + speedMode + ".label") || speedMode;
+    var saveTime = localStorage.getItem(STORAGE_KEY + "_time");
+    var timeStr = saveTime ? new Date(parseInt(saveTime, 10)).toLocaleTimeString() : "—";
     document.getElementById("stats").textContent =
-      "Modifikasyon: " + on + "/" + total + " aktive | Speed: " + speedLabel + " | v" + (CFG.meta && CFG.meta.version || "?");
+      "Toggles: " + on + "/" + total + " aktive · Dènye sove: " + timeStr;
   }
 
-  fetch("code.json?t=" + Date.now())
-    .then(function(r){ return r.json(); })
-    .then(function(j){
-      DEFAULTS = j;
-      CFG = load() || JSON.parse(JSON.stringify(j));
-      paint();
-    })
-    .catch(function(e){
-      document.getElementById("stats").textContent = "Erè: " + e.toString();
-    });
+  // ===== Init =====
+  CFG = loadConfig();
+  paint();
 
+  // ===== Toggle click =====
   document.addEventListener("click", function(ev){
-    // Hitbox
-    var hb = ev.target.closest("[data-hb]");
-    if (hb && CFG){
-      setPath(CFG, "modifications.aimbot.hitbox", hb.dataset.hb);
-      save(); paint(); return;
-    }
-    // Speed nivo
-    var sp = ev.target.closest("[data-speed]");
-    if (sp && CFG){
-      var mode = sp.dataset.speed;
-      setPath(CFG, "modifications.speed.mode", mode);
-      // Aktive chak nivo selon chwa
-      ["slow","normal","moderate","fast"].forEach(function(m){
-        setPath(CFG, "modifications.speed.modes." + m + ".enabled", m === mode);
-      });
-      // Si speed pa aktive, aktive l
-      if (!getPath(CFG, "modifications.speed.enabled")) {
-        setPath(CFG, "modifications.speed.enabled", true);
+    var btn = ev.target.closest("[data-p]");
+    if (!btn || !CFG) return;
+    ev.preventDefault();
+
+    var path = btn.dataset.p;
+    var newVal = !getPath(CFG, path);
+    setPath(CFG, path, newVal);
+
+    // Speed: si w aktive youn, dezaktive lòt yo
+    if (path.indexOf("speed.") === 0 && path !== "speed.enabled") {
+      if (newVal) {
+        ["speed.slow","speed.normal","speed.moderate","speed.fast"].forEach(function(p){
+          if (p !== path) setPath(CFG, p, false);
+        });
+        setPath(CFG, "speed.enabled", true);
       }
-      save(); paint(); return;
     }
-    // Toggle switch
-    var t = ev.target.closest("[data-p]");
-    if (t && CFG){
-      setPath(CFG, t.dataset.p, !getPath(CFG, t.dataset.p));
-      save(); paint();
+
+    // Aimbot hitbox_head: se toggle sèl
+    paint();
+    showToast(newVal ? "ON" : "OFF");
+  });
+
+  // ===== Buttons =====
+  document.getElementById("btn-save").addEventListener("click", function(){
+    if (saveConfig()) {
+      localStorage.setItem(STORAGE_KEY + "_time", String(Date.now()));
+      paint();
+      showToast("Konfigirasyon sove ✓");
+    } else {
+      showToast("Erè: pa ka sove");
     }
   });
 
-  document.getElementById("fov").addEventListener("input", function(){
-    if (!CFG) return;
-    setPath(CFG, "modifications.aimbot.fov", parseInt(this.value, 10));
-    document.getElementById("fov-val").textContent = this.value;
-    save(); paint();
+  document.getElementById("btn-export").addEventListener("click", function(){
+    var json = JSON.stringify(CFG, null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(json).then(function(){
+        showToast("JSON kopye nan clipboard ✓");
+      }).catch(function(){
+        showToast("Erè: pa ka kopye");
+      });
+    } else {
+      // Fallback
+      var ta = document.createElement("textarea");
+      ta.value = json;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); showToast("JSON kopye ✓"); }
+      catch(e){ showToast("Erè: pa ka kopye"); }
+      document.body.removeChild(ta);
+    }
   });
 
-  document.getElementById("speed-mult").addEventListener("input", function(){
-    if (!CFG) return;
-    var mode = getPath(CFG, "modifications.speed.mode") || "normal";
-    setPath(CFG, "modifications.speed.modes." + mode + ".multiplier", parseFloat(this.value));
-    document.getElementById("speed-mult-val").textContent = this.value;
-    save(); paint();
+  document.getElementById("btn-reset").addEventListener("click", function(){
+    if (!confirm("Reset tout konfigirasyon?")) return;
+    CFG = deepClone(DEFAULTS);
+    saveConfig();
+    paint();
+    showToast("Konfigirasyon reset ✓");
   });
 })();
 </script>
 </body>
-                                                     </html>
+                                                             </html>
