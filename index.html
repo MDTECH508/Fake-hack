@@ -1,497 +1,423 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ht">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlasterX Proxy — Admin</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#05080d">
+<title>Aimbot Lab — Android</title>
 <style>
-  :root{
-    --bg-0:#0b0c0e;
-    --glass:rgba(255,255,255,0.05);
-    --glass-border:rgba(255,255,255,0.12);
-    --grey-1:#9aa0a6;
-    --grey-2:#5f6570;
-    --cyan:#5ee7ff;
-    --violet:#c07bff;
-    --ok:#5cf0a4;
-    --bad:#ff6b6b;
-    --warn:#ffb347;
-  }
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(circle at 15% 20%, rgba(94,231,255,0.05), transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(192,123,255,0.06), transparent 45%),
-      var(--bg-0);
-    color:#e7e9ec;
-    font-family:'Segoe UI','Inter',system-ui,sans-serif;
-    min-height:100%;
-  }
-  .wrap{max-width:820px;margin:0 auto;padding:56px 24px 80px;}
-  header{text-align:center;margin-bottom:18px;}
-  h1{
-    font-size:clamp(1.8rem,4vw,2.6rem);margin:0;font-weight:800;letter-spacing:0.5px;
-    background:linear-gradient(120deg,var(--cyan),var(--violet));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .sub-h{color:var(--grey-1);font-size:0.85rem;letter-spacing:1.5px;text-transform:uppercase;margin-top:6px;}
+:root{
+  --bg:#05080d; --pnl:#0b1220ee; --br:#12304a; --fg:#cfe9ff; --acc:#22d3ee;
+  --ok:#3fb950; --er:#f85149; --warn:#f0b429;
+  --sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);
+  font:13px/1.4 ui-monospace,"Roboto Mono",monospace;overscroll-behavior:none}
+body{touch-action:none;user-select:none}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round;display:block}
+svg.i.sm{width:16px;height:16px;stroke-width:2.1}
 
-  .banner{
-    display:none;
-    text-align:center;
-    font-size:0.8rem;
-    padding:10px 16px;
-    border-radius:12px;
-    margin-bottom:22px;
-    border:1px solid rgba(255,179,71,0.35);
-    background:rgba(255,179,71,0.08);
-    color:var(--warn);
-  }
-  .banner.show{display:block;}
+#stage{position:fixed;inset:0;background:#000}
+#game{position:absolute;inset:0;width:100%;height:100%;border:0}
+#overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 
-  .panel{
-    background:linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
-    border:1px solid var(--glass-border);
-    border-radius:20px;padding:28px;
-    backdrop-filter:blur(18px) saturate(140%);
-    box-shadow:0 25px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
-    margin-bottom:22px;
-  }
-  .panel h2{margin:0 0 6px;font-size:1.05rem;}
-  .panel p.sub{margin:0 0 18px;color:var(--grey-1);font-size:0.85rem;}
+#topbar{position:fixed;top:0;left:0;right:0;height:40px;display:flex;align-items:center;
+  gap:8px;padding:0 12px;background:linear-gradient(#000d,#0000);z-index:20;
+  font-size:11px;color:#8fb8d8;pointer-events:none}
+#topbar b{color:var(--acc);letter-spacing:.08em}
+.pill{font-size:10px;padding:3px 9px;border-radius:99px;border:1px solid var(--br);color:#7d97ad}
 
-  .plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;}
-  .plan-btn{
-    background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;
-    padding:18px 10px;color:#eef0f2;text-align:center;cursor:pointer;
-    transition:border-color .2s, transform .15s, background .2s;
-  }
-  .plan-btn:hover{border-color:var(--cyan);background:rgba(255,255,255,0.09);}
-  .plan-btn:active{transform:scale(0.97);}
-  .plan-btn.selected{border-color:var(--violet);box-shadow:0 0 0 2px rgba(192,123,255,0.25);}
-  .plan-btn .num{font-size:1.4rem;font-weight:800;display:block;}
-  .plan-btn .lab{font-size:0.72rem;color:var(--grey-1);text-transform:uppercase;letter-spacing:1px;}
+#quick{position:fixed;right:12px;bottom:calc(14px + var(--sb));display:flex;
+  flex-direction:column;gap:12px;z-index:25}
+.tbtn{width:76px;height:76px;border-radius:50%;border:2px solid var(--br);background:#0b1220e6;
+  color:#7d97ad;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;transition:.12s;backdrop-filter:blur(6px)}
+.tbtn .st{font-size:9px;font-weight:700;letter-spacing:.6px;opacity:.9}
+.tbtn.on{border-color:var(--ok);color:#d7ffe4;box-shadow:0 0 16px #3fb95088,inset 0 0 18px #3fb95026}
+.tbtn:active{transform:scale(.93)}
+#btnAim.on{border-color:var(--er);color:#ffe0df;box-shadow:0 0 18px #f8514988,inset 0 0 18px #f8514926}
+#btnEsp.on{border-color:var(--acc);color:#d6f8ff;box-shadow:0 0 18px #22d3ee88,inset 0 0 18px #22d3ee26}
+#btnMenu{width:50px;height:50px;align-self:flex-end}
 
-  button{cursor:pointer;font-family:inherit;}
-  button.generate{
-    margin-top:18px;width:100%;
-    background:linear-gradient(120deg,var(--cyan),var(--violet));
-    color:#0b0c0e;border:none;border-radius:12px;padding:14px;
-    font-weight:700;font-size:0.95rem;
-  }
-  button.generate:disabled{opacity:0.4;cursor:not-allowed;}
-  button.ghost-full{
-    margin-top:18px;width:100%;background:var(--glass);color:#eef0f2;
-    border:1px solid var(--glass-border);border-radius:12px;padding:14px;font-weight:600;font-size:0.9rem;
-  }
-  button.ghost-full:hover{background:rgba(255,255,255,0.09);}
+#panel{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--pnl);
+  backdrop-filter:blur(10px);border-top:1px solid var(--br);border-radius:14px 14px 0 0;
+  transform:translateY(calc(100% - 48px));transition:transform .22s ease;
+  max-height:80vh;display:flex;flex-direction:column}
+#panel.open{transform:translateY(0)}
+#grab{height:48px;flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:0 14px;
+  border-bottom:1px solid var(--br)}
+#grab .dot{width:38px;height:4px;border-radius:2px;background:#24435e;margin:0 auto}
+#grab b{font-size:10px;color:var(--acc);letter-spacing:.12em}
+#tabs{display:flex;gap:6px;padding:9px 11px;flex:0 0 auto}
+#tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 0;border-radius:9px;border:1px solid var(--br);background:#0b1220;
+  color:#7d97ad;font:700 10.5px ui-monospace,monospace;letter-spacing:.04em}
+#tabs button.active{background:#0e2a3d;border-color:var(--acc);color:var(--acc)}
+#pages{overflow-y:auto;padding:0 12px calc(20px + var(--sb));-webkit-overflow-scrolling:touch}
 
-  .result{
-    display:none;margin-top:20px;padding:20px;border-radius:14px;
-    background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);text-align:center;
-  }
-  .result.show{display:block;animation:reveal .3s ease;}
-  .result.error{border-color:rgba(255,107,107,0.4);}
-  @keyframes reveal{from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);}}
-  .result .code{
-    font-size:1.6rem;font-weight:800;letter-spacing:2px;margin:6px 0 10px;
-    background:linear-gradient(120deg,var(--violet),var(--cyan));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .result .meta{color:var(--grey-1);font-size:0.8rem;}
-
-  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.83rem;}
-  th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--glass-border);vertical-align:middle;}
-  th{color:var(--grey-2);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;}
-  td.mono{font-family:'Courier New',monospace;letter-spacing:0.5px;}
-  .status-ok{color:var(--ok);font-weight:600;}
-  .status-exp{color:var(--bad);font-weight:600;}
-  .status-blocked{color:var(--warn);font-weight:600;}
-  .empty-row td{color:var(--grey-2);text-align:center;padding:20px;}
-
-  .row-actions{display:flex;gap:6px;flex-wrap:wrap;}
-  .mini-btn{
-    border:1px solid var(--glass-border);background:rgba(255,255,255,0.04);
-    color:#eef0f2;border-radius:8px;padding:6px 10px;font-size:0.72rem;font-weight:600;
-    transition:background .15s, border-color .15s;
-  }
-  .mini-btn:hover{background:rgba(255,255,255,0.1);}
-  .mini-btn.block{border-color:rgba(255,179,71,0.4);color:var(--warn);}
-  .mini-btn.unblock{border-color:rgba(92,240,164,0.4);color:var(--ok);}
-  .mini-btn.restart{border-color:rgba(94,231,255,0.4);color:var(--cyan);}
-  .mini-btn.delete{border-color:rgba(255,107,107,0.4);color:var(--bad);}
-
-  footer{text-align:center;color:var(--grey-2);font-size:0.75rem;margin-top:24px;line-height:1.6;}
+fieldset{border:1px solid var(--br);border-radius:10px;margin:0 0 10px;padding:8px 11px 11px}
+legend{color:var(--acc);padding:0 6px;font-size:10px;letter-spacing:.12em}
+label{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0;font-size:12px}
+input[type=range]{width:50%;accent-color:var(--acc);height:28px}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--acc)}
+input[type=text],input[type=number],select,textarea{
+  background:#04080f;color:var(--fg);border:1px solid var(--br);border-radius:8px;
+  padding:10px;font:inherit;width:100%;font-size:12px}
+textarea{height:132px;resize:vertical;line-height:1.45}
+button.act{background:var(--acc);color:#04202a;border:0;border-radius:9px;padding:12px;
+  font:700 12px ui-monospace,monospace;width:100%;display:flex;align-items:center;
+  justify-content:center;gap:8px}
+button.act.ghost{background:#0e1a26;color:var(--fg);border:1px solid var(--br)}
+button.act.danger{background:var(--er);color:#fff}
+button.act:active{filter:brightness(1.18)}
+.row{display:flex;gap:8px;margin-top:9px}.row>*{flex:1}
+#files{max-height:170px;overflow-y:auto;border:1px solid var(--br);border-radius:9px;margin-top:9px}
+#files div{display:flex;gap:8px;padding:10px;border-bottom:1px solid #0f1c29;font-size:11px}
+#files div.sel{background:#0e2a3d;color:var(--acc);border-left:3px solid var(--acc)}
+#log{height:98px;overflow-y:auto;background:#04080f;border:1px solid var(--br);
+  border-radius:9px;padding:8px;font-size:10.5px;white-space:pre-wrap;margin-top:9px}
+.ok{color:var(--ok)}.er{color:var(--er)}.warn{color:var(--warn)}
+.hide{display:none}
 </style>
-
-<!-- Firebase (must use the exact same config + project as index.html) -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "PASTE_YOUR_API_KEY",
-    authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-    projectId: "PASTE_YOUR_PROJECT_ID",
-    storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-    messagingSenderId: "PASTE_YOUR_SENDER_ID",
-    appId: "PASTE_YOUR_APP_ID"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>BlasterX Proxy · Admin</h1>
-    <div class="sub-h">License Key Management</div>
-  </header>
 
-  <div class="banner show" id="storageBanner" style="border-color:rgba(255,107,107,0.35);background:rgba(255,107,107,0.08);color:var(--bad);">
-    This passphrase lock only hides the panel in the browser — it is not real security. Anyone who inspects the page's network traffic or Firestore rules could bypass it. Don't rely on it to protect a paid product; see the note at the bottom of the page.
-  </div>
+<!-- ══════════ SVG ICON SPRITE ══════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-aim" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.6"/>
+    <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+  </symbol>
+  <symbol id="i-esp" viewBox="0 0 24 24">
+    <path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9"/>
+    <path d="M20 15v3.5A1.5 1.5 0 0 1 18.5 20H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15"/>
+    <circle cx="12" cy="10" r="1.5"/><path d="M8.5 15.5a4.8 4.8 0 0 1 7 0"/>
+  </symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24">
+    <path d="M4 7h10M18 7h2M4 12h4M12 12h8M4 17h12M20 17h0"/>
+    <circle cx="16" cy="7" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="17" r="2"/>
+  </symbol>
+  <symbol id="i-target" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="8"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/>
+  </symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24">
+    <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </symbol>
+  <symbol id="i-package" viewBox="0 0 24 24">
+    <path d="M21 8.2v7.6a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 15.8V8.2a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8.2Z"/>
+    <path d="M3.3 7.2 12 12l8.7-4.8M12 21.5V12"/>
+  </symbol>
+  <symbol id="i-code" viewBox="0 0 24 24">
+    <path d="m9 17-5-5 5-5M15 7l5 5-5 5"/>
+  </symbol>
+  <symbol id="i-power" viewBox="0 0 24 24">
+    <path d="M12 3v9"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/>
+  </symbol>
+  <symbol id="i-eject" viewBox="0 0 24 24">
+    <path d="M12 3 4 12h16L12 3Z"/><path d="M4 18h16"/>
+  </symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24">
+    <path d="M20 11a8 8 0 1 0-2.3 6.3"/><path d="M20 4v7h-7"/>
+  </symbol>
+  <symbol id="i-search" viewBox="0 0 24 24">
+    <circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>
+  </symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
 
-  <div id="gate" class="panel" style="text-align:center;">
-    <h2>Admin Access</h2>
-    <p class="sub">Enter the admin passphrase to manage keys.</p>
-    <input type="text" id="passInput" placeholder="Passphrase" style="width:100%;background:rgba(0,0,0,0.35);border:1px solid var(--glass-border);border-radius:12px;padding:13px 16px;color:#eef0f2;font-size:0.95rem;outline:none;margin-bottom:12px;">
-    <button class="generate" id="unlockBtn">Unlock</button>
-    <div class="meta" id="gateStatus" style="color:var(--bad);font-size:0.8rem;margin-top:10px;"></div>
-  </div>
-
-  <div id="adminArea" style="display:none;">
-
-  <section class="panel">
-    <h2>Generate a Key</h2>
-    <p class="sub">Choose a validity period, then generate a license key. It's stored automatically and can be validated on the main site.</p>
-    <div class="plan-grid" id="planGrid">
-      <div class="plan-btn" data-days="1"><span class="num">1</span><span class="lab">Day</span></div>
-      <div class="plan-btn" data-days="7"><span class="num">7</span><span class="lab">Days</span></div>
-      <div class="plan-btn" data-days="15"><span class="num">15</span><span class="lab">Days</span></div>
-      <div class="plan-btn" data-days="30"><span class="num">30</span><span class="lab">Days</span></div>
-    </div>
-    <button class="generate" id="generateBtn" disabled>Generate License Key</button>
-
-    <div class="result" id="resultBox">
-      <div style="color:var(--grey-1);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;" id="resultLabel">New Key</div>
-      <div class="code" id="resultCode">—</div>
-      <div class="meta" id="resultMeta">—</div>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>Bulk Generate Keys</h2>
-    <p class="sub">Pre-generate a large batch of keys at once, split across validity periods. Useful for seeding 5000 keys ahead of time.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-bottom:16px;">
-      <div>
-        <label style="font-size:0.72rem;color:var(--grey-1);text-transform:uppercase;letter-spacing:1px;">1 Day</label>
-        <input type="text" inputmode="numeric" id="bulk1" value="1250" style="width:100%;margin-top:6px;background:rgba(0,0,0,0.35);border:1px solid var(--glass-border);border-radius:10px;padding:10px;color:#eef0f2;">
-      </div>
-      <div>
-        <label style="font-size:0.72rem;color:var(--grey-1);text-transform:uppercase;letter-spacing:1px;">7 Days</label>
-        <input type="text" inputmode="numeric" id="bulk7" value="1250" style="width:100%;margin-top:6px;background:rgba(0,0,0,0.35);border:1px solid var(--glass-border);border-radius:10px;padding:10px;color:#eef0f2;">
-      </div>
-      <div>
-        <label style="font-size:0.72rem;color:var(--grey-1);text-transform:uppercase;letter-spacing:1px;">15 Days</label>
-        <input type="text" inputmode="numeric" id="bulk15" value="1250" style="width:100%;margin-top:6px;background:rgba(0,0,0,0.35);border:1px solid var(--glass-border);border-radius:10px;padding:10px;color:#eef0f2;">
-      </div>
-      <div>
-        <label style="font-size:0.72rem;color:var(--grey-1);text-transform:uppercase;letter-spacing:1px;">30 Days</label>
-        <input type="text" inputmode="numeric" id="bulk30" value="1250" style="width:100%;margin-top:6px;background:rgba(0,0,0,0.35);border:1px solid var(--glass-border);border-radius:10px;padding:10px;color:#eef0f2;">
-      </div>
-    </div>
-    <div style="font-size:0.8rem;color:var(--grey-1);margin-bottom:14px;">Total to generate: <strong id="bulkTotal">5000</strong></div>
-    <button class="generate" id="bulkGenerateBtn">Bulk Generate</button>
-    <div class="status-line" id="bulkStatus" style="margin-top:12px;color:var(--grey-1);font-size:0.85rem;"></div>
-    <button class="ghost-full" id="downloadCsvBtn" style="display:none;margin-top:10px;">Download Generated Keys (CSV)</button>
-  </section>
-
-  <section class="panel">
-    <h2>All Keys</h2>
-    <p class="sub">Block a key to suspend it without deleting it, restart to renew its full validity period from now, or delete it permanently. This table shows the 50 most recent keys — use the CSV export above to see a full bulk batch.</p>
-    <button class="ghost-full" id="refreshBtn">Refresh List</button>
-    <table>
-      <thead>
-        <tr><th>Key</th><th>Plan</th><th>Expires</th><th>Status</th><th>Actions</th></tr>
-      </thead>
-      <tbody id="keyTableBody">
-        <tr class="empty-row"><td colspan="5">Loading...</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  </div><!-- /adminArea -->
-
-  <footer>
-    Storage: Firebase Firestore — shared across every device automatically, as long as index.html and admin.html use the exact same firebaseConfig.<br>
-    Security note: this admin passphrase and any Firestore rule that checks a hardcoded secret can be seen by anyone who inspects network requests in their browser. For real protection, add Firebase Authentication (email/password or Google sign-in) and restrict Firestore write rules to signed-in admin accounts only.
-  </footer>
+<div id="stage">
+  <iframe id="game" src="Build/index.html" allow="fullscreen; autoplay"></iframe>
+  <canvas id="overlay"></canvas>
 </div>
 
-<script>
-  /* =======================================================================
-     ADMIN PASSPHRASE — change this before you deploy. This is a light
-     client-side gate only (see the security note in the footer) — it stops
-     casual visitors from finding the panel, not a determined attacker.
-     ======================================================================= */
-  const ADMIN_PASSPHRASE = 'changeme123';
+<div id="topbar">
+  <b>■ AIMBOT LAB</b>
+  <span id="stat" class="pill">ap tann jwèt…</span>
+  <span id="fps" class="pill">0 fps</span>
+  <span id="cnt" class="pill">SIB 0</span>
+</div>
 
-  const gate = document.getElementById('gate');
-  const adminArea = document.getElementById('adminArea');
-  const passInput = document.getElementById('passInput');
-  const unlockBtn = document.getElementById('unlockBtn');
-  const gateStatus = document.getElementById('gateStatus');
+<div id="quick">
+  <button class="tbtn" id="btnAim"><svg class="i"><use href="#i-target"/></svg><span class="st">OFF</span></button>
+  <button class="tbtn" id="btnEsp"><svg class="i"><use href="#i-eye"/></svg><span class="st">OFF</span></button>
+  <button class="tbtn" id="btnMenu"><svg class="i"><use href="#i-menu"/></svg></button>
+</div>
 
-  unlockBtn.addEventListener('click', () => {
-    if(passInput.value === ADMIN_PASSPHRASE){
-      gate.style.display = 'none';
-      adminArea.style.display = 'block';
-      loadKeyTable();
-    } else {
-      gateStatus.textContent = 'Wrong passphrase.';
-    }
-  });
-  passInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') unlockBtn.click(); });
+<div id="panel">
+  <div id="grab">
+    <b>PANEL</b><div class="dot"></div>
+    <svg class="i sm" id="grabIcon"><use href="#i-chevron"/></svg>
+  </div>
 
-  /* ---- key generation (Firestore) ---- */
-  const planGrid = document.getElementById('planGrid');
-  const generateBtn = document.getElementById('generateBtn');
-  const resultBox = document.getElementById('resultBox');
-  const resultLabel = document.getElementById('resultLabel');
-  const resultCode = document.getElementById('resultCode');
-  const resultMeta = document.getElementById('resultMeta');
-  const keyTableBody = document.getElementById('keyTableBody');
-  const refreshBtn = document.getElementById('refreshBtn');
+  <div id="tabs">
+    <button data-p="aim" class="active"><svg class="i sm"><use href="#i-target"/></svg>AIM</button>
+    <button data-p="esp"><svg class="i sm"><use href="#i-eye"/></svg>ESP</button>
+    <button data-p="data"><svg class="i sm"><use href="#i-package"/></svg>DONE</button>
+    <button data-p="inject"><svg class="i sm"><use href="#i-code"/></svg>INJÈKTE</button>
+  </div>
 
-  let selectedDays = null;
+  <div id="pages">
 
-  planGrid.querySelectorAll('.plan-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      planGrid.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selectedDays = parseInt(btn.dataset.days, 10);
-      generateBtn.disabled = false;
-    });
-  });
+    <!-- ═══ AIM ═══ -->
+    <div data-page="aim">
+      <fieldset><legend>AIMBOT</legend>
+        <label>Mòd <select id="cMode" style="width:50%">
+          <option value="bridge">bridge (C#)</option><option value="heap">heap scan</option></select></label>
+        <label>FOV <input type="range" id="cFov" min="30" max="900" value="240"><b id="vFov">240</b></label>
+        <label>Smooth <input type="range" id="cSmooth" min="1" max="100" value="25"><b id="vSmooth">.25</b></label>
+        <label>Head ratio <input type="range" id="cHead" min="0" max="100" value="92"><b id="vHead">.92</b></label>
+        <label>Distans maks <input type="range" id="cDist" min="10" max="1000" value="500"><b id="vDist">500</b></label>
+        <label>Aim key <select id="cAimKey" style="width:50%">
+          <option value="always">Toujou</option><option value="Mouse2">Klik dwat</option>
+          <option value="ShiftLeft">Shift</option></select></label>
+        <label>Headshot <input type="checkbox" id="cHs" checked></label>
+        <label>Humanize <input type="checkbox" id="cHum" checked></label>
+      </fieldset>
+      <div class="row">
+        <button class="act ghost" id="btnProbe"><svg class="i sm"><use href="#i-search"/></svg>Probe jwèt</button>
+      </div>
+    </div>
 
-  function randomSuffix(len){
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let out = '';
-    for(let i=0;i<len;i++){ out += chars[Math.floor(Math.random()*chars.length)]; }
-    return out;
-  }
+    <!-- ═══ ESP ═══ -->
+    <div data-page="esp" class="hide">
+      <fieldset><legend>ESP · HOLOGRAM</legend>
+        <label>Bwat <input type="checkbox" id="eBox" checked></label>
+        <label>Snapline <input type="checkbox" id="eSnap"></label>
+        <label>Non <input type="checkbox" id="eName" checked></label>
+        <label>Distans <input type="checkbox" id="eDist" checked></label>
+        <label>Bar lavi <input type="checkbox" id="eHp" checked></label>
+        <label>Hit info <input type="checkbox" id="eHit" checked></label>
+        <label>Glow hologram <input type="checkbox" id="eHolo" checked></label>
+        <label>Ranpli <input type="checkbox" id="eFill"></label>
+        <label>ESP maks <input type="range" id="eMax" min="10" max="1000" value="500"><b id="vEMax">500</b></label>
+        <label>Echèl <input type="number" id="eScale" value="1" step="0.1" style="width:50%"></label>
+        <label>Koulè <select id="eColor" style="width:50%">
+          <option value="#22d3ee">Cyan</option><option value="#3fb950">Vèt</option>
+          <option value="#f85149">Wouj</option><option value="#f0b429">Jòn</option>
+          <option value="#c084fc">Violet</option></select></label>
+      </fieldset>
+    </div>
 
-  async function generateKey(days){
-    const suffix = randomSuffix(4).toLowerCase();
-    const code = `BLAST-${suffix}-${days}D`.toUpperCase();
-    const now = Date.now();
-    const record = {
-      planDays: days,
-      createdAt: now,
-      expiresAt: now + days * 86400000,
-      blocked: false
-    };
-    await db.collection('licenses').doc(code).set(record);
-    return { code, record };
-  }
-
-  generateBtn.addEventListener('click', async () => {
-    if(!selectedDays) return;
-    generateBtn.disabled = true;
-    generateBtn.textContent = 'Generating...';
-    resultBox.classList.remove('error');
-    try {
-      const { code, record } = await generateKey(selectedDays);
-      resultLabel.textContent = 'New Key';
-      resultCode.textContent = code;
-      resultMeta.textContent = `Valid for ${record.planDays} day(s) — expires ${new Date(record.expiresAt).toLocaleString()}`;
-      resultBox.classList.add('show');
-      await loadKeyTable();
-    } catch(err) {
-      resultLabel.textContent = 'Error';
-      resultCode.textContent = '—';
-      resultMeta.textContent = 'Could not generate key: ' + (err && err.message ? err.message : 'unknown error') + ' — check that firebaseConfig is filled in correctly.';
-      resultBox.classList.add('show');
-      resultBox.classList.add('error');
-    }
-    generateBtn.disabled = false;
-    generateBtn.textContent = 'Generate License Key';
-  });
-
-  /* ---- key table + actions (Firestore) ---- */
-  function keyRowHtml(code, data){
-    const now = Date.now();
-    const expired = now > data.expiresAt;
-    const blocked = !!data.blocked;
-    let statusHtml;
-    if(blocked){
-      statusHtml = '<span class="status-blocked">Blocked</span>';
-    } else if(expired){
-      statusHtml = '<span class="status-exp">Expired</span>';
-    } else {
-      statusHtml = '<span class="status-ok">Active</span>';
-    }
-    return `<tr data-code="${code}">
-      <td class="mono">${code}</td>
-      <td>${data.planDays}d</td>
-      <td>${new Date(data.expiresAt).toLocaleString()}</td>
-      <td>${statusHtml}</td>
-      <td>
-        <div class="row-actions">
-          ${blocked
-            ? `<button class="mini-btn unblock" data-action="unblock" data-code="${code}">Unblock</button>`
-            : `<button class="mini-btn block" data-action="block" data-code="${code}">Block</button>`}
-          <button class="mini-btn restart" data-action="restart" data-code="${code}">Restart</button>
-          <button class="mini-btn delete" data-action="delete" data-code="${code}">Delete</button>
+    <!-- ═══ DONE ═══ -->
+    <div data-page="data" class="hide">
+      <fieldset><legend>PAKE DONE (.data)</legend>
+        <input type="text" id="dataUrl" value="Build/game.data">
+        <div class="row">
+          <button class="act" id="btnData"><svg class="i sm"><use href="#i-package"/></svg>Analize</button>
+          <button class="act ghost" id="btnUse"><svg class="i sm"><use href="#i-power"/></svg>Itilize</button>
         </div>
-      </td>
-    </tr>`;
-  }
+        <div id="files"></div>
+        <input type="text" id="search" placeholder="chèche string / offset…" style="margin-top:9px">
+        <button class="act ghost" id="btnSearch" style="margin-top:9px">
+          <svg class="i sm"><use href="#i-search"/></svg>Chèche</button>
+        <div id="log"></div>
+      </fieldset>
+    </div>
 
-  async function loadKeyTable(){
-    keyTableBody.innerHTML = '<tr class="empty-row"><td colspan="5">Loading...</td></tr>';
-    try {
-      const snapshot = await db.collection('licenses').orderBy('createdAt', 'desc').limit(50).get();
-      if(snapshot.empty){
-        keyTableBody.innerHTML = '<tr class="empty-row"><td colspan="5">No keys yet.</td></tr>';
-        return;
-      }
-      const rows = [];
-      snapshot.forEach(doc => rows.push(keyRowHtml(doc.id, doc.data())));
-      keyTableBody.innerHTML = rows.join('');
-    } catch(err) {
-      keyTableBody.innerHTML = `<tr class="empty-row"><td colspan="5">Could not load keys: ${err && err.message ? err.message : 'unknown error'}</td></tr>`;
-    }
-  }
+    <!-- ═══ INJÈKTE ═══ -->
+    <div data-page="inject" class="hide">
+      <fieldset><legend>INJEKTÈ SCRIPT</legend>
+        <select id="preset" style="margin-bottom:9px">
+          <option value="">— preset —</option>
+          <option value="fov">FOV + crosshair</option>
+          <option value="scan">Rapò heap</option>
+          <option value="dump">Dump metadata strings</option>
+          <option value="probe">Probe window jwèt</option>
+        </select>
+        <textarea id="inject" spellcheck="false">// eval nan window jwèt la (menm orijin)
+const A = window.__aimbot;
+console.log('sib:', A ? A.targets().length : 'pa chaje');</textarea>
+        <div class="row">
+          <button class="act" id="btnInject"><svg class="i sm"><use href="#i-code"/></svg>Enjekte</button>
+          <button class="act ghost" id="btnEject"><svg class="i sm"><use href="#i-eject"/></svg>Eject</button>
+        </div>
+        <div class="row">
+          <button class="act ghost" id="btnReload"><svg class="i sm"><use href="#i-refresh"/></svg>Reload</button>
+        </div>
+      </fieldset>
+    </div>
 
-  keyTableBody.addEventListener('click', async (e) => {
-    const btn = e.target.closest('.mini-btn');
-    if(!btn) return;
-    const action = btn.dataset.action;
-    const code = btn.dataset.code;
-    btn.disabled = true;
+  </div>
+</div>
 
-    try {
-      const ref = db.collection('licenses').doc(code);
-      if(action === 'delete'){
-        await ref.delete();
-      } else if(action === 'block'){
-        await ref.update({ blocked: true });
-      } else if(action === 'unblock'){
-        await ref.update({ blocked: false });
-      } else if(action === 'restart'){
-        const doc = await ref.get();
-        const data = doc.data();
-        const now = Date.now();
-        await ref.update({
-          createdAt: now,
-          expiresAt: now + data.planDays * 86400000,
-          blocked: false
-        });
-      }
-      await loadKeyTable();
-    } catch(err) {
-      alert('Action failed: ' + (err && err.message ? err.message : 'unknown error'));
-      btn.disabled = false;
-    }
-  });
+<script src="aimbot.js" id="aimbot-script"></script>
+<script>
+const $ = id => document.getElementById(id);
+const gameEl = $('game'), overlay = $('overlay');
+let pkg = null, selected = null;
 
-  refreshBtn.addEventListener('click', loadKeyTable);
+function log(m, c=''){ const d=document.createElement('div'); d.className=c;
+  d.textContent=m; $('log').appendChild(d); $('log').scrollTop=1e9; }
 
-  /* ---- bulk generate ---- */
-  const bulkInputs = {
-    1: document.getElementById('bulk1'),
-    7: document.getElementById('bulk7'),
-    15: document.getElementById('bulk15'),
-    30: document.getElementById('bulk30')
+/* ─────────── ENGINE ─────────── */
+let A = Aimbot.create({ getWindow: () => gameEl.contentWindow, overlay, onLog: log });
+window.__aimbot = A;
+A.start();
+
+/* ─────────── Bouton ON/OFF ─────────── */
+function paint(){
+  $('btnAim').classList.toggle('on', A.cfg.aimbot.on);
+  $('btnEsp').classList.toggle('on', A.cfg.esp.on);
+  $('btnAim').querySelector('.st').textContent = A.cfg.aimbot.on ? 'ON' : 'OFF';
+  $('btnEsp').querySelector('.st').textContent = A.cfg.esp.on ? 'ON' : 'OFF';
+}
+$('btnAim').onclick = () => { A.setAimbot(!A.cfg.aimbot.on); paint(); };
+$('btnEsp').onclick = () => { A.setEsp(!A.cfg.esp.on); paint(); };
+paint();
+
+/* ─────────── Panel ─────────── */
+$('grab').onclick = () => {
+  $('panel').classList.toggle('open');
+  $('grabIcon').style.transform = $('panel').classList.contains('open') ? 'rotate(180deg)' : '';
+};
+$('btnMenu').onclick = () => $('grab').onclick();
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelectorAll('[data-page]').forEach(p =>
+    p.classList.toggle('hide', p.dataset.page !== b.dataset.p));
+});
+
+/* ─────────── Reglaj → config ─────────── */
+$('cMode').onchange   = e => A.configure({aimbot:{mode:e.target.value}});
+$('cFov').oninput     = e => { $('vFov').textContent=e.target.value; A.configure({aimbot:{fov:+e.target.value}}); };
+$('cSmooth').oninput  = e => { const v=e.target.value/100; $('vSmooth').textContent=v.toFixed(2); A.configure({aimbot:{smooth:v}}); };
+$('cHead').oninput    = e => { const v=e.target.value/100; $('vHead').textContent=v.toFixed(2); A.configure({aimbot:{headRatio:v}}); };
+$('cDist').oninput    = e => { $('vDist').textContent=e.target.value; A.configure({aimbot:{maxDist:+e.target.value}}); };
+$('cAimKey').onchange = e => A.configure({aimbot:{aimKey:e.target.value}});
+$('cHs').onchange     = e => A.configure({aimbot:{headshot:e.target.checked}});
+$('cHum').onchange    = e => A.configure({aimbot:{humanize:e.target.checked}});
+
+$('eBox').onchange    = e => A.configure({esp:{box:e.target.checked}});
+$('eSnap').onchange   = e => A.configure({esp:{snap:e.target.checked}});
+$('eName').onchange   = e => A.configure({esp:{name:e.target.checked}});
+$('eDist').onchange   = e => A.configure({esp:{distance:e.target.checked}});
+$('eHp').onchange     = e => A.configure({esp:{hp:e.target.checked}});
+$('eHit').onchange    = e => A.configure({esp:{hitInfo:e.target.checked}});
+$('eHolo').onchange   = e => A.configure({esp:{holo:e.target.checked}});
+$('eFill').onchange   = e => A.configure({esp:{fill:e.target.checked}});
+$('eMax').oninput     = e => { $('vEMax').textContent=e.target.value; A.configure({esp:{maxDist:+e.target.value}}); };
+$('eScale').oninput   = e => A.configure({esp:{scale:+e.target.value||1}});
+$('eColor').onchange  = e => A.configure({esp:{color:e.target.value}});
+
+/* ─────────── Probe ─────────── */
+$('btnProbe').onclick = () => {
+  try{
+    const w = gameEl.contentWindow;
+    log('Module: ' + (!!w.Module) + ' | unityInstance: ' + (!!w.unityInstance), 'ok');
+    if (w.Module) log('HEAPF32: ' + (w.Module.HEAPF32.byteLength/1048576).toFixed(1) + ' Mo');
+  }catch(e){ log('✖ ' + e.message, 'er'); }
+};
+
+/* ─────────── Injektè ─────────── */
+$('btnInject').onclick = () => {
+  try{
+    const w = gameEl.contentWindow;
+    const r = w.eval($('inject').value);
+    log('✔ enjekte' + (r!==undefined ? ' → ' + r : ''), 'ok');
+  }catch(e){ log('✖ ' + e.message, 'er'); }
+};
+$('btnEject').onclick = () => {
+  const tag = document.getElementById('aimbot-script');
+  if (tag) tag.remove();
+  A.eject();
+  delete window.__aimbot;
+  log('script retire (eject)', 'warn');
+  paint();
+};
+$('btnReload').onclick = () => { location.reload(); };
+
+$('preset').onchange = e => {
+  const P = {
+    fov:`const c=document.querySelector('canvas');if(!c)throw'pa gen canvas';
+const d=document.createElement('div');d.style.cssText='position:fixed;left:50%;top:50%;width:440px;height:440px;transform:translate(-50%,-50%);border:2px solid #22d3ee;border-radius:50%;pointer-events:none;z-index:9';
+document.body.appendChild(d);'ok'`,
+    scan:`if(!window.Module)throw'Module pa la';
+({mb:(Module.HEAPF32.byteLength/1048576).toFixed(1)})`,
+    dump:`if(!window.Module)throw'Module pa la';
+const s=[];for(let i=0;i<Module.HEAPU8.length;i+=4){const c=Module.HEAPU8[i];
+if(c>=32&&c<127){let j=i,k='';while(j<Module.HEAPU8.length&&k.length<40){const d=Module.HEAPU8[j];if(d<32||d>126)break;k+=String.fromCharCode(d);j++}
+if(k.length>7)s.push(k);i=j}}s.slice(0,50)`,
+    probe:`Object.keys(window).filter(k=>/unity|module|game|instance/i.test(k))`
   };
-  const bulkTotal = document.getElementById('bulkTotal');
-  const bulkGenerateBtn = document.getElementById('bulkGenerateBtn');
-  const bulkStatus = document.getElementById('bulkStatus');
-  const downloadCsvBtn = document.getElementById('downloadCsvBtn');
-  let lastBulkBatch = [];
+  if (P[e.target.value]) $('inject').value = P[e.target.value];
+};
 
-  function updateBulkTotal(){
-    let total = 0;
-    Object.values(bulkInputs).forEach(inp => { total += (parseInt(inp.value, 10) || 0); });
-    bulkTotal.textContent = total;
+/* ─────────── Pake done Unity ─────────── */
+const td = new TextDecoder();
+async function parseUnityData(url){
+  const r = await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status);
+  const buf = await r.arrayBuffer(), dv = new DataView(buf);
+  if (!td.decode(new Uint8Array(buf,0,16)).startsWith('UnityWebData1.0'))
+    throw new Error('se pa yon .data Unity');
+  const contentStart = dv.getInt32(16, true);
+  let p = 20, files = [];
+  while (p + 12 <= contentStart){
+    const offset = dv.getInt32(p,true); p+=4;
+    const size   = dv.getInt32(p,true); p+=4;
+    const plen   = dv.getInt32(p,true); p+=4;
+    if (plen<=0 || plen>1024) break;
+    const path = td.decode(new Uint8Array(buf,p,plen)); p+=plen;
+    files.push({path, offset, size});
   }
-  Object.values(bulkInputs).forEach(inp => inp.addEventListener('input', updateBulkTotal));
-  updateBulkTotal();
-
-  async function bulkGenerate(counts){
-    const BATCH_LIMIT = 450;
-    const generated = [];
-    const now0 = Date.now();
-
-    for (const daysStr of Object.keys(counts)){
-      const days = parseInt(daysStr, 10);
-      let remaining = counts[daysStr];
-      while (remaining > 0){
-        const size = Math.min(BATCH_LIMIT, remaining);
-        const batch = db.batch();
-        for (let i = 0; i < size; i++){
-          const suffix = randomSuffix(4).toLowerCase();
-          const code = `BLAST-${suffix}-${days}D`.toUpperCase();
-          const now = Date.now();
-          const record = { planDays: days, createdAt: now, expiresAt: now + days * 86400000, blocked: false };
-          batch.set(db.collection('licenses').doc(code), record);
-          generated.push({ code, ...record });
-        }
-        await batch.commit();
-        remaining -= size;
-        bulkStatus.textContent = `Generated ${generated.length} of ${Object.values(counts).reduce((a,b)=>a+b,0)} keys...`;
-      }
-    }
-    return generated;
+  return {buf, files};
+}
+$('btnData').onclick = async () => {
+  log('ap analize ' + $('dataUrl').value + '…');
+  try{
+    pkg = await parseUnityData($('dataUrl').value);
+    const box = $('files'); box.innerHTML = '';
+    pkg.files.forEach(f => {
+      const d = document.createElement('div');
+      d.innerHTML = `<span style="flex:1">${f.path}</span>
+        <span style="color:#8b949e">${(f.size/1024).toFixed(1)} Ko</span>`;
+      d.onclick = () => {
+        [...box.children].forEach(c=>c.classList.remove('sel'));
+        d.classList.add('sel'); selected = f; log('chwazi: ' + f.path);
+      };
+      box.appendChild(d);
+    });
+    log(`✔ ${pkg.files.length} fichye nan pake a`, 'ok');
+  }catch(e){ log('✖ ' + e.message, 'er'); }
+};
+$('btnUse').onclick = () => {
+  if (!selected) return log('✖ chwazi yon fichye', 'er');
+  const u8 = new Uint8Array(pkg.buf, selected.offset, selected.size);
+  let n = 0;
+  for (let i=0;i+6<u8.length;i++) if (u8[i]>=32&&u8[i]<127){ n++; }
+  A.configure({ package: { path:selected.path, offset:selected.offset, size:selected.size }});
+  window.__PKG = { path:selected.path, offset:selected.offset, size:selected.size };
+  log(`✔ itilize ${selected.path} (${n} oktè), offset 0x${selected.offset.toString(16)}`, 'ok');
+};
+$('btnSearch').onclick = () => {
+  if (!pkg || !selected) return log('✖ chwazi yon fichye', 'er');
+  const q = $('search').value.trim(); if(!q) return;
+  const u8 = new Uint8Array(pkg.buf, selected.offset, selected.size);
+  const nd = [...q].map(c=>c.charCodeAt(0)), hits = [];
+  outer: for (let i=0;i<=u8.length-nd.length;i++){
+    for (let k=0;k<nd.length;k++) if (u8[i+k]!==nd[k]) continue outer;
+    hits.push('0x'+(selected.offset+i).toString(16));
+    if (hits.length>40) break;
   }
+  log(hits.length ? `jwenn ${hits.length}: ${hits.join(' ')}` : 'anyen jwenn',
+      hits.length?'ok':'er');
+};
 
-  bulkGenerateBtn.addEventListener('click', async () => {
-    const counts = {
-      1: parseInt(bulkInputs[1].value, 10) || 0,
-      7: parseInt(bulkInputs[7].value, 10) || 0,
-      15: parseInt(bulkInputs[15].value, 10) || 0,
-      30: parseInt(bulkInputs[30].value, 10) || 0
-    };
-    const total = Object.values(counts).reduce((a,b) => a+b, 0);
-    if (total <= 0){
-      bulkStatus.textContent = 'Enter at least one key count above.';
-      return;
+/* ─────────── Deteksyon jwèt ─────────── */
+setInterval(() => {
+  try{
+    const w = gameEl.contentWindow;
+    if (w.unityInstance){
+      w.__unityInstance = w.unityInstance;
+      $('stat').textContent = 'jwèt konekte';
+      $('stat').style.color = 'var(--ok)';
     }
-    if (total > 5000){
-      bulkStatus.textContent = 'Keep a single bulk batch to 5000 keys or fewer.';
-      return;
-    }
-    bulkGenerateBtn.disabled = true;
-    downloadCsvBtn.style.display = 'none';
-    bulkStatus.textContent = `Generating ${total} keys, this can take a moment...`;
-    try {
-      lastBulkBatch = await bulkGenerate(counts);
-      bulkStatus.textContent = `Done — ${lastBulkBatch.length} keys generated and saved.`;
-      downloadCsvBtn.style.display = 'block';
-      await loadKeyTable();
-    } catch(err) {
-      bulkStatus.textContent = 'Bulk generation failed: ' + (err && err.message ? err.message : 'unknown error');
-    }
-    bulkGenerateBtn.disabled = false;
-  });
-
-  downloadCsvBtn.addEventListener('click', () => {
-    if(!lastBulkBatch.length) return;
-    const header = 'key,plan_days,created_at,expires_at\n';
-    const rows = lastBulkBatch.map(r =>
-      `${r.code},${r.planDays},${new Date(r.createdAt).toISOString()},${new Date(r.expiresAt).toISOString()}`
-    ).join('\n');
-    const blob = new Blob([header + rows], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `blasterx-keys-${Date.now()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
+  }catch(e){}
+}, 1200);
 </script>
 </body>
-</html>
+            </html>
