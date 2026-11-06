@@ -1,9 +1,10 @@
 {
   "meta": {
-    "name": "Universal Aim Config",
-    "version": "1.0.0",
+    "name": "Universal Aim Config Pro",
+    "version": "2.0.0",
     "author": "User",
-    "updated": "2026-11-06"
+    "updated": "2026-11-06",
+    "configUrl": "https://fake-hack-three.vercel.app/code.json"
   },
 
   "modifications": {
@@ -21,20 +22,22 @@
 
     "esp": {
       "enabled": true,
-      "box": { "enabled": true, "color": "#00FF88" },
-      "name": { "enabled": true },
-      "distance": { "enabled": true },
-      "hpBar": { "enabled": true },
+      "box": { "enabled": true, "color": "#00FF88", "thickness": 1.5 },
+      "name": { "enabled": true, "color": "#FFFFFF" },
+      "distance": { "enabled": true, "color": "#00C8FF" },
+      "hpBar": { "enabled": true, "color": "#FF3366" },
       "count": { "enabled": true },
-      "aimLine": { "enabled": true },
-      "fovCircle": { "enabled": true, "color": "#00C8FF" }
+      "aimLine": { "enabled": true, "color": "#FF3366" },
+      "fovCircle": { "enabled": true, "color": "#00C8FF", "thickness": 2 },
+      "skeleton": { "enabled": false, "color": "#FFFF00" }
     },
 
     "hologram": {
       "enabled": false,
       "color": "#00E5FF",
       "mode": "wireframe",
-      "glow": 14
+      "glow": 14,
+      "scanlines": true
     },
 
     "lock": {
@@ -48,58 +51,101 @@
       "enabled": true,
       "strength": 0.55,
       "radiusDeg": 45,
-      "deadzone": 0.4
+      "deadzone": 0.4,
+      "maxSpeedDegPerSec": 720
     },
 
     "prediction": {
       "enabled": true,
-      "bulletSpeed": 800
+      "bulletSpeed": 800,
+      "gravity": 9.8,
+      "windFactor": 0
     },
 
     "triggerBot": {
       "enabled": false,
-      "delayMs": 60
+      "delayMs": 60,
+      "onlyWhenAimed": true,
+      "hitbox": "head"
     },
 
     "fovCircle": {
       "enabled": true,
       "color": "#00C8FF",
-      "thickness": 2
+      "thickness": 2,
+      "style": "solid"
     },
 
     "crosshair": {
       "enabled": true,
       "style": "dot",
       "color": "#FF3366",
-      "size": 6
+      "size": 6,
+      "gap": 4
     },
 
     "radar": {
       "enabled": true,
       "range": 300,
       "showEnemies": true,
-      "showTeammates": false
+      "showTeammates": false,
+      "showItems": false,
+      "rotation": true
+    },
+
+    "speed": {
+      "enabled": false,
+      "multiplier": 1.0,
+      "mode": "walk"
+    },
+
+    "jump": {
+      "enabled": false,
+      "multiplier": 1.0,
+      "autoJump": false
+    },
+
+    "infiniteAmmo": {
+      "enabled": false,
+      "noReload": true
+    },
+
+    "noRecoil": {
+      "enabled": false,
+      "strength": 1.0
+    },
+
+    "wallhack": {
+      "enabled": false,
+      "color": "#FF00FF",
+      "opacity": 0.6
     }
   },
 
   "network": {
     "mode": "allowlist",
-    "allowlist": ["fake-hack-three.vercel.app"],
-    "blocklist": ["/login", "/auth", "/pay"],
+    "allowlist": ["fake-hack-three.vercel.app", "client.us.freefiremobile.com"],
+    "blocklist": ["/login", "/auth", "/oauth", "/pay", "/purchase"],
     "onlyIfJson": true,
-    "maxBodyKB": 512
+    "onlyIfEnemies": true,
+    "maxBodyKB": 512,
+    "headerTag": true
   },
 
   "mapping": {
     "enemyPath": "data.units",
     "selfPath": "data.me",
     "forwardPath": "data.me.forward",
-    "myTeam": 1
+    "localPosition": null,
+    "localForward": null,
+    "myTeam": 1,
+    "mockConfigPath": "/aimbot/config.json"
   },
 
   "inject": {
     "enabled": true,
     "intelField": "__aimbot",
-    "aimField": "__aim"
+    "aimField": "__aim",
+    "trimList": false
   }
 }
