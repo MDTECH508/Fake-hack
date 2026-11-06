@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "name": "Universal Aim Config",
+    "version": "1.0.0",
+    "author": "User",
+    "updated": "2026-11-06"
+  },
+
+  "modifications": {
+    "aimbot": {
+      "enabled": true,
+      "fov": 150,
+      "fovMode": "degrees",
+      "hitbox": "head",
+      "hitboxOptions": ["head", "chest"],
+      "smooth": 0.35,
+      "maxDistance": 300,
+      "ignoreTeammates": true,
+      "ignoreKnocked": true
+    },
+
+    "esp": {
+      "enabled": true,
+      "box": { "enabled": true, "color": "#00FF88" },
+      "name": { "enabled": true },
+      "distance": { "enabled": true },
+      "hpBar": { "enabled": true },
+      "count": { "enabled": true },
+      "aimLine": { "enabled": true },
+      "fovCircle": { "enabled": true, "color": "#00C8FF" }
+    },
+
+    "hologram": {
+      "enabled": false,
+      "color": "#00E5FF",
+      "mode": "wireframe",
+      "glow": 14
+    },
+
+    "lock": {
+      "enabled": true,
+      "holdMs": 900,
+      "stickyFactor": 0.75,
+      "stickyRange": 55
+    },
+
+    "magnetic": {
+      "enabled": true,
+      "strength": 0.55,
+      "radiusDeg": 45,
+      "deadzone": 0.4
+    },
+
+    "prediction": {
+      "enabled": true,
+      "bulletSpeed": 800
+    },
+
+    "triggerBot": {
+      "enabled": false,
+      "delayMs": 60
+    },
+
+    "fovCircle": {
+      "enabled": true,
+      "color": "#00C8FF",
+      "thickness": 2
+    },
+
+    "crosshair": {
+      "enabled": true,
+      "style": "dot",
+      "color": "#FF3366",
+      "size": 6
+    },
+
+    "radar": {
+      "enabled": true,
+      "range": 300,
+      "showEnemies": true,
+      "showTeammates": false
+    }
+  },
+
+  "network": {
+    "mode": "allowlist",
+    "allowlist": ["fake-hack-three.vercel.app"],
+    "blocklist": ["/login", "/auth", "/pay"],
+    "onlyIfJson": true,
+    "maxBodyKB": 512
+  },
+
+  "mapping": {
+    "enemyPath": "data.units",
+    "selfPath": "data.me",
+    "forwardPath": "data.me.forward",
+    "myTeam": 1
+  },
+
+  "inject": {
+    "enabled": true,
+    "intelField": "__aimbot",
+    "aimField": "__aim"
+  }
+}
