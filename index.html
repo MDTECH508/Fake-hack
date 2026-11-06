@@ -1,1 +1,150 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b10">
+<title>Aim Universal · FOV 150</title>
+<style>
+  :root{--bg:#070b10;--card:#0e151d;--line:#1b2734;--txt:#dfe9f3;--mut:#7d8ea3;--grn:#00ff88;--cyn:#00c8ff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.5 system-ui,-apple-system,Roboto,sans-serif;padding:16px 14px 90px}
+  h1{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--grn);margin:0 0 2px}
+  .sub{color:var(--mut);font:11px ui-monospace,monospace;margin:0 0 14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:10px}
+  .ttl{font:11px ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--cyn);margin:2px 0 8px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed #17222e}
+  .row:last-child{border:0}
+  .sw{min-width:60px;text-align:center;font:700 11px ui-monospace,monospace;padding:8px;border-radius:8px;border:1px solid #24333f;background:#101a23;color:#6c7e90;cursor:pointer;user-select:none}
+  .sw.on{background:var(--grn);color:#04120a;border-color:var(--grn);box-shadow:0 0 14px #00ff8855}
+  .seg{display:flex;gap:6px}
+  .seg .sw{min-width:68px}
+  .seg .sw.sel{background:var(--cyn);color:#00131a;border-color:var(--cyn)}
+  input[type=number],input[type=text]{width:110px;background:#0b1219;border:1px solid #24333f;color:var(--txt);border-radius:8px;padding:7px 8px;font:13px ui-monospace,monospace;text-align:center}
+  input[type=range]{width:120px;accent-color:var(--cyn)}
+  .val{color:var(--mut);font:12px ui-monospace,monospace;min-width:40px;text-align:right}
+  .bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#070b10ee;border-top:1px solid var(--line);backdrop-filter:blur(8px)}
+  button{flex:1;padding:11px 6px;border-radius:10px;border:1px solid #24333f;background:#16202b;color:var(--txt);font:700 11px ui-monospace,monospace;letter-spacing:.08em}
+  button.p{background:var(--grn);color:#04120a;border-color:var(--grn)}
+  .warn{color:#ffd400;font:11px ui-monospace,monospace;margin-top:6px}
+</style>
+</head>
+<body>
+<h1>Aim Universal · FOV 150</h1>
+<div class="sub" id="stat">loading config...</div>
 
+<div class="card"><div class="ttl">Injector</div>
+  <div class="row"><span>Enjeksyon</span><div class="sw" data-p="injector.enabled">OFF</div></div>
+  <div class="row"><span>Enjekte JSON</span><div class="sw" data-p="inject.enabled">OFF</div></div>
+</div>
+
+<div class="card"><div class="ttl">Aimbot</div>
+  <div class="row"><span>Aimbot</span><div class="sw" data-p="aimbot.enabled">OFF</div></div>
+  <div class="row"><span>Hitbox</span>
+    <div class="seg">
+      <div class="sw" data-hb="head">HEAD</div>
+      <div class="sw" data-hb="chest">CHEST</div>
+    </div>
+  </div>
+  <div class="row"><span>FOV</span><input type="range" min="10" max="360" step="5" data-p="aimbot.fov"><span class="val" data-out="aimbot.fov"></span></div>
+  <div class="row"><span>Smooth</span><input type="range" min="0.02" max="1" step="0.01" data-p="aimbot.smooth"><span class="val" data-out="aimbot.smooth"></span></div>
+  <div class="row"><span>Distans max</span><input type="number" step="1" data-p="aimbot.maxDistance"></div>
+  <div class="row"><span>Prediction</span><div class="sw" data-p="aimbot.prediction.enabled">OFF</div></div>
+  <div class="row"><span>Ignore ekip</span><div class="sw" data-p="aimbot.ignoreTeammates">OFF</div></div>
+</div>
+
+<div class="card"><div class="ttl">ESP</div>
+  <div class="row"><span>ESP</span><div class="sw" data-p="esp.enabled">OFF</div></div>
+  <div class="row"><span>Box</span><div class="sw" data-p="esp.box.enabled">OFF</div></div>
+  <div class="row"><span>Bar HP</span><div class="sw" data-p="esp.hpBar.enabled">OFF</div></div>
+  <div class="row"><span>Non</span><div class="sw" data-p="esp.name.enabled">OFF</div></div>
+  <div class="row"><span>Distans</span><div class="sw" data-p="esp.distance.enabled">OFF</div></div>
+  <div class="row"><span>Kontè enèmi</span><div class="sw" data-p="esp.count.enabled">OFF</div></div>
+  <div class="row"><span>Sèk FOV</span><div class="sw" data-p="esp.fovCircle.enabled">OFF</div></div>
+</div>
+
+<div class="card"><div class="ttl">Hologram</div>
+  <div class="row"><span>Hologram</span><div class="sw" data-p="hologram.enabled">OFF</div></div>
+</div>
+
+<div class="card"><div class="ttl">Mapping</div>
+  <div class="row"><span>enemyPath</span><input type="text" placeholder="data.players" data-p="mapping.enemyPath"></div>
+  <div class="row"><span>myTeam</span><input type="text" placeholder="1" data-p="mapping.myTeam"></div>
+  <div class="warn">Vide = deteksyon otomatik</div>
+</div>
+
+<div class="bar">
+  <button onclick="loadCfg()">RELOAD</button>
+  <button onclick="saveCfg()">SAVE</button>
+  <button class="p" onclick="exportCfg()">EXPORT JSON</button>
+</div>
+
+<script>
+const KEY = "aim-cfg-v2";
+let cfg = {};
+
+const get = p => p.split(".").reduce((o,k)=> o==null?undefined:o[k], cfg);
+const set = (p,v) => { const ks=p.split("."); let o=cfg;
+  for(let i=0;i<ks.length-1;i++){ if(typeof o[ks[i]]!=="object"||o[ks[i]]===null) o[ks[i]]={}; o=o[ks[i]]; }
+  o[ks.at(-1)] = v; };
+
+function paint(){
+  document.querySelectorAll("[data-p]").forEach(el=>{
+    const v = get(el.dataset.p); if (v === undefined) return;
+    if (el.tagName === "INPUT" && el.type !== "text") el.value = v;
+    else if (el.tagName === "INPUT") el.value = v ?? "";
+    else { el.classList.toggle("on", !!v); el.textContent = v ? "ON" : "OFF"; }
+  });
+  document.querySelectorAll("[data-out]").forEach(el=> el.textContent = get(el.dataset.out) ?? "");
+  const hb = get("aimbot.hitbox") || "head";
+  document.querySelectorAll("[data-hb]").forEach(el=> el.classList.toggle("sel", el.dataset.hb === hb));
+  document.getElementById("stat").textContent =
+    "v" + (get("meta.version")||"?") + "  |  fov " + get("aimbot.fov") + " " + (get("aimbot.fovMode")||"") +
+    "  |  hitbox " + hb;
+}
+
+function persist(){ localStorage.setItem(KEY, JSON.stringify(cfg)); }
+
+async function loadCfg(){
+  const local = localStorage.getItem(KEY);
+  if (local) { cfg = JSON.parse(local); }
+  else {
+    try { cfg = await (await fetch("./config.json?t="+Date.now(),{cache:"no-store"})).json(); }
+    catch(e){ cfg = {}; }
+  }
+  paint();
+}
+function saveCfg(){ persist(); alert("Sovgade lokalman ✔"); }
+
+function exportCfg(){
+  cfg.meta = cfg.meta || {};
+  cfg.meta.updated = new Date().toISOString().slice(0,10);
+  const blob = new Blob([JSON.stringify(cfg,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "config.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+document.addEventListener("click", ev=>{
+  const hb = ev.target.closest("[data-hb]");
+  if (hb){ set("aimbot.hitbox", hb.dataset.hb); persist(); paint(); return; }
+
+  const sw = ev.target.closest("[data-p]");
+  if (!sw || sw.tagName === "INPUT") return;
+  set(sw.dataset.p, !get(sw.dataset.p));
+  persist(); paint();
+});
+
+document.addEventListener("change", ev=>{
+  const el = ev.target; if (!el.dataset.p) return;
+  let v = el.value;
+  if (el.type === "number" || el.type === "range") v = Number(v);
+  set(el.dataset.p, v); persist(); paint();
+});
+
+loadCfg();
+</script>
+</body>
+    </html>
