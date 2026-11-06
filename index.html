@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Universal Aim Config</title>
+<title>Universal Aim Config Pro</title>
 <style>
   *{box-sizing:border-box}
   body{margin:0;background:#070b10;color:#dfe9f3;font:14px system-ui;padding:16px;max-width:640px;margin:0 auto}
@@ -14,20 +14,24 @@
   .sw.on{background:#00ff88;color:#04120a;border-color:#00ff88}
   .row{display:flex;gap:8px}
   .row .sw{flex:1}
+  .speed-row{display:flex;gap:8px;flex-wrap:wrap}
+  .speed-row .sw{flex:1;min-width:100px;padding:10px 8px;font-size:10px;line-height:1.3;height:auto;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px}
+  .speed-row .sw .lbl{font-size:9px;opacity:0.7}
+  .speed-row .sw.slow.on{background:#00C8FF;border-color:#00C8FF;color:#00131a}
+  .speed-row .sw.normal.on{background:#00FF88;border-color:#00FF88;color:#04120a}
+  .speed-row .sw.moderate.on{background:#FFAA00;border-color:#FFAA00;color:#1a1000}
+  .speed-row .sw.fast.on{background:#FF3366;border-color:#FF3366;color:#fff}
   input[type=range]{width:120px}
-  input[type=number]{width:70px;background:#0b1219;border:1px solid #24333f;color:#dfe9f3;border-radius:6px;padding:4px 8px;font:12px monospace}
   .val{font:11px monospace;color:#00c8ff;min-width:40px;text-align:right}
-  .json-box{width:100%;height:140px;background:#0b1219;border:1px solid #24333f;color:#dfe9f3;border-radius:8px;padding:10px;font:11px monospace;resize:vertical;margin-top:8px}
-  .btn{background:#0e151d;border:1px solid #00ff88;color:#00ff88;padding:10px 14px;border-radius:10px;font:700 11px monospace;cursor:pointer;width:100%;margin-top:8px}
-  .btn:hover{background:#00ff88;color:#04120a}
-  .btn.danger{border-color:#ff3366;color:#ff3366}
-  .btn.danger:hover{background:#ff3366;color:#fff}
   .stats{font:11px monospace;color:#7d8ea3;margin-top:10px;line-height:1.7}
+  .warning{background:#2a1015;border:1px solid #ff3366;border-radius:8px;padding:10px;margin-top:10px;font:11px monospace;color:#ff8090;line-height:1.6}
+  .noclip-row .sw{background:#101a23;border-color:#FF00FF;color:#FF00FF}
+  .noclip-row .sw.on{background:#FF00FF;color:#fff;border-color:#FF00FF}
 </style>
 </head>
 <body>
 
-<h1>Universal Aim Config</h1>
+<h1>Universal Aim Config Pro</h1>
 
 <h2>Aimbot</h2>
 <div class="b"><span>Aimbot</span><div class="sw" data-p="modifications.aimbot.enabled">OFF</div></div>
@@ -37,44 +41,66 @@
     <div class="sw" data-hb="chest">CHEST</div>
   </div>
 </div>
-<div class="b"><span>FOV</span>
+<div class="b"><span>FOV (360)</span>
   <input type="range" id="fov" min="30" max="360" step="10">
-  <span class="val" id="fov-val">150</span>
+  <span class="val" id="fov-val">360</span>
 </div>
-<div class="b"><span>Smooth</span>
-  <input type="range" id="smooth" min="0" max="1" step="0.05">
-  <span class="val" id="smooth-val">0.35</span>
+
+<h2>Speed — 4 Nivo</h2>
+<div class="b"><span>Speed</span><div class="sw" data-p="modifications.speed.enabled">OFF</div></div>
+<div class="b" style="flex-direction:column;align-items:stretch">
+  <div class="speed-row">
+    <div class="sw slow" data-speed="slow">
+      <span>SLOW</span>
+      <span class="lbl">×1.5</span>
+    </div>
+    <div class="sw normal" data-speed="normal">
+      <span>NORMAL</span>
+      <span class="lbl">×2.0</span>
+    </div>
+    <div class="sw moderate" data-speed="moderate">
+      <span>PA TWÒ RAPID</span>
+      <span class="lbl">×2.5</span>
+    </div>
+    <div class="sw fast" data-speed="fast">
+      <span>RAPID</span>
+      <span class="lbl">×3.5</span>
+    </div>
+  </div>
 </div>
+<div class="b"><span>Multiplier</span>
+  <input type="range" id="speed-mult" min="1" max="5" step="0.1">
+  <span class="val" id="speed-mult-val">2.0</span>
+</div>
+
+<h2>Noclip — Pase Nan Objè</h2>
+<div class="b noclip-row"><span>Pase Nan Objè</span><div class="sw" data-p="modifications.noclip.enabled">OFF</div></div>
 
 <h2>ESP</h2>
 <div class="b"><span>ESP</span><div class="sw" data-p="modifications.esp.enabled">OFF</div></div>
 <div class="b"><span>Box</span><div class="sw" data-p="modifications.esp.box.enabled">OFF</div></div>
 <div class="b"><span>Name</span><div class="sw" data-p="modifications.esp.name.enabled">OFF</div></div>
-<div class="b"><span>Distance</span><div class="sw" data-p="modifications.esp.distance.enabled">OFF</div></div>
 <div class="b"><span>HP Bar</span><div class="sw" data-p="modifications.esp.hpBar.enabled">OFF</div></div>
-<div class="b"><span>Aim Line</span><div class="sw" data-p="modifications.esp.aimLine.enabled">OFF</div></div>
 
-<h2>Lock & Magnetic</h2>
+<h2>Icewall & Gloo</h2>
+<div class="b"><span>Icewall</span><div class="sw" data-p="modifications.icewall.enabled">OFF</div></div>
+<div class="b"><span>Gloo</span><div class="sw" data-p="modifications.gloo.enabled">OFF</div></div>
+
+<h2>Lock & Others</h2>
 <div class="b"><span>Lock</span><div class="sw" data-p="modifications.lock.enabled">OFF</div></div>
 <div class="b"><span>Magnetic</span><div class="sw" data-p="modifications.magnetic.enabled">OFF</div></div>
 <div class="b"><span>Prediction</span><div class="sw" data-p="modifications.prediction.enabled">OFF</div></div>
 <div class="b"><span>TriggerBot</span><div class="sw" data-p="modifications.triggerBot.enabled">OFF</div></div>
 
-<h2>Hologram & Radar</h2>
-<div class="b"><span>Hologram</span><div class="sw" data-p="modifications.hologram.enabled">OFF</div></div>
-<div class="b"><span>Radar</span><div class="sw" data-p="modifications.radar.enabled">OFF</div></div>
-<div class="b"><span>Crosshair</span><div class="sw" data-p="modifications.crosshair.enabled">OFF</div></div>
-<div class="b"><span>FOV Circle</span><div class="sw" data-p="modifications.fovCircle.enabled">OFF</div></div>
+<div class="warning">
+⚠️ <strong>Avètisman:</strong> Speed, Noclip, Icewall, ak Gloo se karakteristik jwèt la. ProxyPin pa ka modifye yo nan Free Fire. Meni sa a ap kontwole yon config JSON, pa jwèt la.
+</div>
 
-<h2>JSON</h2>
-<textarea id="json" class="json-box"></textarea>
-<button class="btn" id="export">⬇ Kopye JSON</button>
-<button class="btn danger" id="reset">↺ Reset</button>
 <div class="stats" id="stats">Loading...</div>
 
 <script>
 (function(){
-  var KEY = "uaim_cfg_v1";
+  var KEY = "uaim_cfg_v3";
   var DEFAULTS = null;
   var CFG = null;
 
@@ -90,29 +116,35 @@
   function paint(){
     if (!CFG) return;
 
-    // Switches
     document.querySelectorAll("[data-p]").forEach(function(el){
       var v = getPath(CFG, el.dataset.p);
       el.classList.toggle("on", !!v);
       el.textContent = v ? "ON" : "OFF";
     });
 
-    // Hitbox
     var hb = getPath(CFG, "modifications.aimbot.hitbox") || "head";
     document.querySelectorAll("[data-hb]").forEach(function(el){
       el.classList.toggle("on", el.dataset.hb === hb);
     });
 
-    // Sliders
-    var fov = getPath(CFG, "modifications.aimbot.fov") || 150;
-    var sm = getPath(CFG, "modifications.aimbot.smooth") || 0.35;
+    // Speed nivo — make selected one "on"
+    var speedMode = getPath(CFG, "modifications.speed.mode") || "normal";
+    var speedEnabled = getPath(CFG, "modifications.speed.enabled");
+    document.querySelectorAll("[data-speed]").forEach(function(el){
+      var isSelected = el.dataset.speed === speedMode;
+      el.classList.toggle("on", isSelected && speedEnabled);
+    });
+
+    // FOV slider
+    var fov = getPath(CFG, "modifications.aimbot.fov") || 360;
     document.getElementById("fov").value = fov;
     document.getElementById("fov-val").textContent = fov;
-    document.getElementById("smooth").value = sm;
-    document.getElementById("smooth-val").textContent = sm;
 
-    // JSON box
-    document.getElementById("json").value = JSON.stringify(CFG, null, 2);
+    // Speed multiplier slider
+    var currentMode = speedMode;
+    var mult = getPath(CFG, "modifications.speed.modes." + currentMode + ".multiplier") || 2.0;
+    document.getElementById("speed-mult").value = mult;
+    document.getElementById("speed-mult-val").textContent = mult;
 
     // Stats
     var mods = CFG.modifications || {};
@@ -121,11 +153,11 @@
       total++;
       if (mods[k] && mods[k].enabled) on++;
     });
+    var speedLabel = getPath(CFG, "modifications.speed.modes." + speedMode + ".label") || speedMode;
     document.getElementById("stats").textContent =
-      "Modifikasyon: " + on + "/" + total + " aktive | v" + (CFG.meta && CFG.meta.version || "?");
+      "Modifikasyon: " + on + "/" + total + " aktive | Speed: " + speedLabel + " | v" + (CFG.meta && CFG.meta.version || "?");
   }
 
-  // Fetch defaults soti nan code.json
   fetch("code.json?t=" + Date.now())
     .then(function(r){ return r.json(); })
     .then(function(j){
@@ -137,13 +169,29 @@
       document.getElementById("stats").textContent = "Erè: " + e.toString();
     });
 
-  // Toggle switches
   document.addEventListener("click", function(ev){
+    // Hitbox
     var hb = ev.target.closest("[data-hb]");
     if (hb && CFG){
       setPath(CFG, "modifications.aimbot.hitbox", hb.dataset.hb);
       save(); paint(); return;
     }
+    // Speed nivo
+    var sp = ev.target.closest("[data-speed]");
+    if (sp && CFG){
+      var mode = sp.dataset.speed;
+      setPath(CFG, "modifications.speed.mode", mode);
+      // Aktive chak nivo selon chwa
+      ["slow","normal","moderate","fast"].forEach(function(m){
+        setPath(CFG, "modifications.speed.modes." + m + ".enabled", m === mode);
+      });
+      // Si speed pa aktive, aktive l
+      if (!getPath(CFG, "modifications.speed.enabled")) {
+        setPath(CFG, "modifications.speed.enabled", true);
+      }
+      save(); paint(); return;
+    }
+    // Toggle switch
     var t = ev.target.closest("[data-p]");
     if (t && CFG){
       setPath(CFG, t.dataset.p, !getPath(CFG, t.dataset.p));
@@ -151,38 +199,21 @@
     }
   });
 
-  // Sliders
   document.getElementById("fov").addEventListener("input", function(){
     if (!CFG) return;
     setPath(CFG, "modifications.aimbot.fov", parseInt(this.value, 10));
     document.getElementById("fov-val").textContent = this.value;
     save(); paint();
   });
-  document.getElementById("smooth").addEventListener("input", function(){
-    if (!CFG) return;
-    setPath(CFG, "modifications.aimbot.smooth", parseFloat(this.value));
-    document.getElementById("smooth-val").textContent = this.value;
-    save(); paint();
-  });
 
-  // Export
-  document.getElementById("export").addEventListener("click", function(){
+  document.getElementById("speed-mult").addEventListener("input", function(){
     if (!CFG) return;
-    var s = JSON.stringify(CFG, null, 2);
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(s).then(function(){ alert("JSON kopye!"); });
-    } else {
-      document.getElementById("json").select(); document.execCommand("copy");
-    }
-  });
-
-  // Reset
-  document.getElementById("reset").addEventListener("click", function(){
-    if (!DEFAULTS) return;
-    CFG = JSON.parse(JSON.stringify(DEFAULTS));
+    var mode = getPath(CFG, "modifications.speed.mode") || "normal";
+    setPath(CFG, "modifications.speed.modes." + mode + ".multiplier", parseFloat(this.value));
+    document.getElementById("speed-mult-val").textContent = this.value;
     save(); paint();
   });
 })();
 </script>
 </body>
-</html>
+ </html>
