@@ -3,24 +3,38 @@ const pino = require('pino');
 const fs = require('fs');
 const path = require('path');
 
+// Kenbe sesyon yo nan memwa Vercel la
+global.blastSessions = global.blastSessions || {};
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Content-Type', 'application/json');
-  
-  let number = (req.query.number || '').replace(/[^0-9]/g, '');
-  
-  if (!number || number === 'ping') return res.json({ status: 'online' });
-  if (number.length < 9) return res.json({ error: 'Nimewo a twò kout. Mete l konsa: 50934946793' });
-  if (number.length > 15) return res.json({ error: 'Nimewo a twò long.' });
 
-  // Si nimewo a komanse ak 0, retire l - ex: 034946793 -> 34946793
-  // Si li pa gen kòd peyi, ajoute 509 pou Ayiti otomatik
+  const action = req.query.action || 'pair';
+  let number = (req.query.number || '').replace(/[^0-9]/g, '');
+
+  // ---- TCHEKE SI LI KONEKTE ----
+  if (action === 'status') {
+    const s = global.blastSessions[number];
+    if (!s) return res.json({ status: 'waiting' });
+    if (s.connected) return res.json({ status: 'connected', sessionId: s.sessionId });
+    if (s.error) return res.json({ status: 'error', error: s.error });
+    return res.json({ status: 'waiting' });
+  }
+
+  // ---- JENERE KEY A ----
+  if (!number || number === 'ping') return res.json({ status: 'online' });
   if (number.startsWith('0')) number = number.slice(1);
   if (number.length === 8) number = '509' + number;
+  if (number.length < 9) return res.json({ error: 'Mete nimewo a konsa: 50934946793' });
+
+  // Si sesyon an deja egziste, retounen menm code a
+  if (global.blastSessions[number] && global.blastSessions[number].code) {
+    return res.json({ code: global.blastSessions[number].code });
+  }
 
   try {
-    // Sèvi ak /tmp sou Vercel - se sèl kote Vercel kite ekri fichye
-    const authFolder = '/tmp/blast-auth-' + number;
+    const authFolder = '/tmp/blast-' + number;
     if (!fs.existsSync(authFolder)) fs.mkdirSync(authFolder, { recursive: true });
     const credsPath = path.join(authFolder, 'creds.json');
 
@@ -35,13 +49,7 @@ module.exports = async (req, res) => {
     };
 
     const sock = makeWASocket({
-      auth: {
-        creds,
-        keys: {
-          get: () => ({}),
-          set: () => {}
-        }
-      },
+      auth: { creds, keys: { get: () => ({}), set: () => {} } },
       logger: pino({ level: 'silent' }),
       browser: Browsers.macOS('Safari'),
       printQRInTerminal: false,
@@ -51,38 +59,43 @@ module.exports = async (req, res) => {
 
     sock.ev.on('creds.update', saveCreds);
 
-    // TANN SOCKET LA PARE - 8 segond kounye a, pa 3 segond
-    console.log('Waiting for socket for ' + number);
+    // Lè li konekte, sove SESSION ID a
+    sock.ev.on('connection.update', (update) => {
+      const { connection } = update;
+      if (connection === 'open') {
+        console.log('✅ CONNECTED: ' + number);
+        // Kreye SESSION ID - se KEY pou Railway a
+        const sessionId = 'BLAST_' + Buffer.from(JSON.stringify(creds, BufferJSON.replacer)).toString('base64').slice(0, 200);
+        global.blastSessions[number] = { ...global.blastSessions[number], connected: true, sessionId: sessionId, fullCreds: creds };
+        saveCreds();
+      }
+      if (connection === 'close') {
+        if (global.blastSessions[number] && !global.blastSessions[number].connected) {
+          global.blastSessions[number].error = 'Koneksyon fèmen. Eseye ankò.';
+        }
+      }
+    });
+
+    global.blastSessions[number] = { sock, code: null, connected: false };
+
     await new Promise(r => setTimeout(r, 8000));
 
-    // Eseye pran code a - eseye 2 fwa si premye a echwe
     let code = null;
-    let lastError = null;
     for (let i = 0; i < 2; i++) {
-      try {
-        code = await sock.requestPairingCode(number);
-        if (code) break;
-      } catch (e) {
-        lastError = e;
-        console.log('Attempt ' + (i+1) + ' failed:', e.message);
-        await new Promise(r => setTimeout(r, 3000));
-      }
+      try { code = await sock.requestPairingCode(number); if (code) break; }
+      catch (e) { await new Promise(r => setTimeout(r, 3000)); }
     }
 
-    setTimeout(() => { try { sock.end(); } catch(e){} }, 30000);
+    if (!code) return res.json({ error: 'Pa ka jwenn KEY. Tann 10 segond epi eseye ankò.' });
 
-    if (code) {
-      return res.json({ code, session: true });
-    } else {
-      return res.json({ error: 'Pa ka jwenn code. Eseye ankò nan 10 segond. Rezon: ' + (lastError?.message || 'Socket pa pare') });
-    }
+    global.blastSessions[number].code = code;
+
+    // Kite socket la rete louvri 2 minit pou l ka konekte
+    setTimeout(() => { try { sock.end(); } catch(e){} }, 120000);
+
+    return res.json({ code });
 
   } catch (e) {
-    console.log('Pair fatal error:', e);
-    // Erè ki pi souvan yo tradui an kreyòl
-    if (e.message.includes('Connection Closed')) return res.json({ error: 'Koneksyon fèmen. Tann 10 segond epi eseye ankò.' });
-    if (e.message.includes('401')) return res.json({ error: 'Nimewo sa a deja konekte sou yon lòt aparèy. Eseye ak yon lòt nimewo.' });
-    if (e.message.includes('Bad Request')) return res.json({ error: 'Nimewo a pa valab. Verifye l: 50934946793' });
-    return res.json({ error: 'Eseye ankò nan 10 segond: ' + e.message });
+    return res.json({ error: 'Eseye ankò: ' + e.message });
   }
 };
