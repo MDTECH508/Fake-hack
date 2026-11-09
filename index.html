@@ -30,6 +30,9 @@
   .channel a{color:#fff;font-weight:700;word-break:break-all}
   .footer{margin-top:16px;font-size:11px;color:#777}
   #status{font-size:13px;margin-top:10px;color:#ffb3b3;min-height:18px}
+  .success-box{margin-top:20px;padding:20px;border-radius:20px;background:rgba(0,255,136,.15);border:1px solid #00ff88;display:none}
+  .success-box.show{display:block}
+  #sessionKey{word-break:break-all;font-size:11px;background:#000;padding:10px;border-radius:10px;margin-top:10px;text-align:left;max-height:120px;overflow:auto}
 </style>
 </head>
 <body>
@@ -46,12 +49,15 @@
     <div class="input-wrap"><span>+</span><input id="num" type="tel" placeholder="509 3494 6793" /></div>
     <button class="btn" id="btn" onclick="getCode()">GET PAIRING CODE</button>
     <p id="status"></p>
-    <div class="code-box" id="codeBox"><span style="font-size:11px;letter-spacing:2px;color:#aaa">YOUR PAIRING CODE</span><div id="code">--------</div><button class="copy-btn" onclick="copyCode()">Copy Code</button><p style="font-size:12px;color:#aaa;margin-top:10px">Code expires in 60 seconds</p></div>
-    <div class="steps"><b>HOW TO CONNECT:</b><br>1. Copy your code above<br>2. Open WhatsApp > Settings > Linked Devices<br>3. Tap <b>Link with phone number</b><br>4. Paste your code — Done!</div>
-    <div class="channel"><b>JOIN OUR CHANNEL - BLAST TEAM !</b><br><a href="https://whatsapp.com/channel/0029Vb6tw1G42Dcja42wiY3R">https://whatsapp.com/channel/0029Vb6tw1G42Dcja42wiY3R</a></div>
+    <div class="code-box" id="codeBox"><span style="font-size:11px;letter-spacing:2px;color:#aaa">YOUR PAIRING KEY - METE L NAN WHATSAPP</span><div id="code">--------</div><button class="copy-btn" onclick="copyCode()">Copy Key</button><p id="waitingText" style="font-size:12px;color:#ffcc00;margin-top:10px">⏳ Ap tann ou mete KEY a nan WhatsApp...</p></div>
+    <div class="success-box" id="successBox"><h3>✅ CONNECTED!</h3><p style="font-size:13px;margin-top:8px">Bot la konekte pou kont li! Kopye SESSION KEY sa a pou Railway:</p><div id="sessionKey"></div><button class="copy-btn" onclick="copySession()">Copy Session Key</button><p style="font-size:12px;color:#aaa;margin-top:10px">Mete l nan Railway → Variables → SESSION_ID</p></div>
+    <div class="steps"><b>HOW TO CONNECT:</b><br>1. Mete nimewo ou → Klike GET PAIRING CODE<br>2. Kopye KEY a<br>3. Louvri WhatsApp > Settings > Linked Devices<br>4. Tape <b>Link with phone number</b><br>5. Kole KEY a → Li konekte pou kont li!</div>
+    <div class="channel"><b>JOIN OUR CHANNEL - BLAST TEAM !</b><br><a href="https://whatsapp.com/channel/0029Vb6tw1G42Dcja42wiY3R">BLAST TEAM !</a></div>
     <p class="footer">© 2026 BLAST TECHNOLOGY • ALL RIGHTS RESERVED</p>
   </div>
 <script>
+  let currentNum = '';
+  let checkInterval = null;
   async function checkPing(){
     let start = Date.now();
     try{ await fetch('/api/pair?number=ping'); document.getElementById('ping').innerText = (Date.now()-start)+' ms'; }
@@ -61,17 +67,40 @@
   async function getCode(){
     let num = document.getElementById('num').value.replace(/[^0-9]/g,'');
     let status = document.getElementById('status'); let btn = document.getElementById('btn');
-    if(num.length < 10){ status.innerText='Please enter a valid number. Ex: 50934946793'; return; }
-    btn.disabled=true; btn.innerText='GENERATING...'; status.style.color='#fff'; status.innerText='Please wait 15 seconds...';
+    if(num.length < 10){ status.innerText='Mete nimewo a konsa: 50934946793'; return; }
+    currentNum = num;
+    btn.disabled=true; btn.innerText='GENERATING KEY...'; status.style.color='#fff'; status.innerText='Ap jenere KEY ou... tann 10 segond';
     try{
       let r = await fetch('/api/pair?number='+num);
       let d = await r.json();
-      if(d.code){ document.getElementById('codeBox').classList.add('show'); document.getElementById('code').innerText=d.code; status.style.color='#7dffb0'; status.innerText='Code generated! Copy it fast.'; }
-      else{ status.style.color='#ffb3b3'; status.innerText=d.error||'Failed. Try again in 10 sec.'; }
-    }catch(e){ status.innerText='Error. Try again.'; }
+      if(d.code){
+        document.getElementById('codeBox').classList.add('show');
+        document.getElementById('code').innerText=d.code;
+        status.style.color='#ffcc00'; status.innerText='KEY ou pare! Mete l nan WhatsApp kounye a.';
+        // Kòmanse tcheke chak 3 segond si li konekte
+        if(checkInterval) clearInterval(checkInterval);
+        checkInterval = setInterval(checkStatus, 3000);
+      } else { status.style.color='#ffb3b3'; status.innerText=d.error||'Echwe. Eseye ankò.'; }
+    }catch(e){ status.innerText='Erè. Eseye ankò.'; }
     btn.disabled=false; btn.innerText='GET PAIRING CODE';
   }
-  function copyCode(){ let c=document.getElementById('code').innerText; navigator.clipboard.writeText(c); alert('Code copied: '+c); }
+  async function checkStatus(){
+    if(!currentNum) return;
+    try{
+      let r = await fetch('/api/pair?action=status&number='+currentNum);
+      let d = await r.json();
+      if(d.status === 'connected'){
+        clearInterval(checkInterval);
+        document.getElementById('waitingText').innerText='✅ Konekte!';
+        document.getElementById('status').style.color='#7dffb0';
+        document.getElementById('status').innerText='✅ Bot la konekte pou kont li!';
+        document.getElementById('successBox').classList.add('show');
+        if(d.sessionId) document.getElementById('sessionKey').innerText=d.sessionId;
+      }
+    }catch(e){}
+  }
+  function copyCode(){ let c=document.getElementById('code').innerText; navigator.clipboard.writeText(c); alert('KEY kopye: '+c); }
+  function copySession(){ let c=document.getElementById('sessionKey').innerText; navigator.clipboard.writeText(c); alert('Session Key kopye!'); }
 </script>
 </body>
-                                          </html>
+</html>
