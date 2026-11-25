@@ -22,14 +22,17 @@ input{width:100%;background:#0a0a0a;border:1px solid #333;color:#fff;padding:14p
 input:focus{border-color:#fff}
 input::placeholder{color:#525252}
 input.error{border-color:#ff5555!important}
-.btn{width:100%;margin-top:14px;padding:15px;border:none;border-radius:13px;background:#fff;color:#000;font-weight:900;font-size:13px;letter-spacing:1.2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+input:disabled{opacity:.4;cursor:not-allowed}
+.btn{width:100%;margin-top:14px;padding:15px;border:none;border-radius:13px;background:#fff;color:#000;font-weight:900;font-size:13px;letter-spacing:1.2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}
 .btn:active{transform:scale(.98)}
-.btn2{width:100%;margin-top:10px;padding:13px;border:1px solid #333;border-radius:13px;background:#1a1a1a;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;cursor:pointer}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn2{width:100%;margin-top:10px;padding:13px;border:1px solid #333;border-radius:13px;background:#1a1a1a;color:#fff;font-weight:800;font-size:12px;letter-spacing:1px;cursor:pointer;font-family:inherit}
+.btn2:disabled{opacity:.4;cursor:not-allowed}
 .msg{text-align:center;font-size:12px;font-weight:600;margin-top:12px;min-height:18px;color:#ff7777}
 .msg.ok{color:#fff}
 .timer{text-align:center}
-.timer .big{font-size:34px;font-weight:900;color:#fff;font-family:'JetBrains Mono',monospace;letter-spacing:1px}
-.timer p{font-size:12px;color:#a1a1aa;margin-top:6px}
+.timer .big{font-size:30px;font-weight:900;color:#fff;font-family:'JetBrains Mono',monospace;letter-spacing:1px}
+.timer p{font-size:12px;color:#a1a1aa;margin-top:6px;word-break:break-all}
 .menu{display:flex;flex-direction:column;gap:12px}
 .opt{display:flex;justify-content:space-between;align-items:center;padding:16px;border-radius:18px;cursor:pointer;background:#1a1a1a;border:1px solid #2a2a2a}
 .opt.active{border-color:#fff}
@@ -60,6 +63,20 @@ input.error{border-color:#ff5555!important}
 .status-dot{width:8px;height:8px;border-radius:50%;background:#525252}
 .status-dot.on{background:#fff;box-shadow:0 0 10px #fff}
 .file-input{display:none}
+.lock-banner{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#1a0f0f;border:1px solid #4a1f1f;border-radius:14px;margin-top:14px;font-size:12px;color:#ff7777;font-weight:600}
+.lock-banner svg{flex-shrink:0;width:18px;height:18px}
+.lock-banner.unlocked{background:#0f1f14;border-color:#1f4a2a;color:#4ade80}
+.pkg-status{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.5px;margin-top:8px;color:#4ade80}
+.pkg-status svg{width:12px;height:12px}
+.pkg-status.locked{color:#ff7777}
+.engine{margin-top:14px;padding:14px;border:1px solid #2a2a2a;border-radius:16px;background:#0f1a0f}
+.engine-title{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:1.2px;color:#4ade80;margin-bottom:10px}
+.engine-title .pulse{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.engine-row{display:flex;justify-content:space-between;font-size:11px;padding:6px 0;border-bottom:1px solid #1a1a1a}
+.engine-row:last-child{border-bottom:none}
+.engine-row span:first-child{color:#a1a1aa}
+.engine-row span:last-child{color:#4ade80;font-family:'JetBrains Mono',monospace;font-weight:700}
 </style>
 </head>
 <body>
@@ -103,6 +120,18 @@ input.error{border-color:#ff5555!important}
     <p id="status">Active</p>
   </div>
 
+  <!-- FPS ENGINE STATUS -->
+  <div class="card">
+    <h3>FPS ENGINE &nbsp;•&nbsp; <span>BACKGROUND</span></h3>
+    <div class="engine" id="engineBox">
+      <div class="engine-title"><span class="pulse"></span> ACTIVE — REFRESH EVERY 60s</div>
+      <div class="engine-row"><span>Last FPS Refresh</span><span id="lastFps">—</span></div>
+      <div class="engine-row"><span>Last Memory Clean</span><span id="lastRam">—</span></div>
+      <div class="engine-row"><span>RAM Freed (session)</span><span id="ramFreed">0 MB</span></div>
+      <div class="engine-row"><span>Next cycle</span><span id="nextCycle">60s</span></div>
+    </div>
+  </div>
+
   <div class="card">
     <h3>DASHBOARD MENU &nbsp;•&nbsp; <span>CONFIG</span></h3>
     <div class="menu">
@@ -113,13 +142,6 @@ input.error{border-color:#ff5555!important}
         </div>
         <div class="right"><span class="pct">70%</span><div class="switch" id="swAim"></div></div>
       </div>
-      <div class="opt" id="optHolo" onclick="toggleOpt('holo')">
-        <div class="opt-left">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h13v4H8l-2 3H3V7z"/><path d="M16 7h3l2 2v5h-5"/><circle cx="8" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/><path d="M6 14h3M13 14h3"/></svg></div>
-          <div><b>HOLO WEAPON</b><small>Holo weapon effect</small></div>
-        </div>
-        <div class="right"><span class="pct">FULL</span><div class="switch" id="swHolo"></div></div>
-      </div>
       <div class="opt" id="optFps" onclick="toggleOpt('fps')">
         <div class="opt-left">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
@@ -129,12 +151,20 @@ input.error{border-color:#ff5555!important}
       </div>
     </div>
 
-    <div class="safe-row">
+    <div class="safe-row" style="margin-top:14px;border-color:#fff;background:#0f0f0f">
       <div style="display:flex;gap:10px;align-items:center">
         <span class="status-dot on" id="safeDot"></span>
-        <div><b>SAFE MODE</b><br><small>Fully Safe — Demo UI</small></div>
+        <div>
+          <b>HOLO SAFE</b><br>
+          <small>Master unlock — enables localConfig access</small>
+        </div>
       </div>
-      <div class="switch on" id="swSafe" onclick="toggleSafe(event)"></div>
+      <div class="switch" id="swSafe" onclick="toggleSafe(event)"></div>
+    </div>
+
+    <div class="lock-banner" id="lockBanner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span id="lockText">localConfig.json LOCKED — toggle HOLO SAFE to unlock</span>
     </div>
 
     <div class="box">
@@ -144,17 +174,24 @@ input.error{border-color:#ff5555!important}
       <label>PACKAGE NAME (DISPLAY ONLY)</label>
       <input id="pkgInput" value="com.dts.freefireth" oninput="updatePkg()">
       <div class="box-val" id="pkgVal">com.dts.freefireth</div>
+      <div class="pkg-status locked" id="pkgStatus">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>PACKAGE LOCKED — HOLO SAFE required</span>
+      </div>
       <div class="box-note">Display only. No access, no inject, no game connection.</div>
     </div>
   </div>
 
   <div class="card">
     <h3>LOCAL CONFIG &nbsp;•&nbsp; <span>EXPORT / IMPORT</span></h3>
-    <button class="btn" onclick="downloadLocalConfig()">DOWNLOAD localConfig.json</button>
+    <button class="btn" id="downloadBtn" onclick="downloadLocalConfig()" disabled>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      DOWNLOAD localConfig.json
+    </button>
     <button class="btn2" onclick="document.getElementById('uploadInput').click()">UPLOAD localConfig.json</button>
     <input type="file" id="uploadInput" class="file-input" accept=".json,application/json" onchange="importConfig(event, false)">
     <div class="msg ok" id="configMsg"></div>
-    <div class="box-note" style="text-align:center">Fichye a gen: Key + Domain + Options. Lè ou re-upload li, Dashboard la ap li l epi ranpli tout pou ou.</div>
+    <div class="box-note" style="text-align:center">Holo Safe ON = file available. OFF = locked.</div>
   </div>
 
   <div class="safe"><span class="dot"></span> FULL SAFE &nbsp;•&nbsp; JUST A CONFIG &nbsp;•&nbsp; BLAST CONFIG</div>
@@ -165,80 +202,151 @@ input.error{border-color:#ff5555!important}
 </div>
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   60 PRE-LOADED KEYS — 20x 1-day, 20x 7-day, 20x 30-day
-   Format: { code: "BLAST-XXXX", duration: <days> }
+   OFFICIAL SITE
+   ═══════════════════════════════════════════════════════════════════ */
+const OFFICIAL_SITE = "https://fake-hack-three.vercel.app/";
+
+/* ═══════════════════════════════════════════════════════════════════
+   60 PRE-LOADED KEYS
    ═══════════════════════════════════════════════════════════════════ */
 const KEYS_DB = [
-  /* ═══ 1 DAY KEYS (20) ═══ */
-  { code: "BLAST-1D-A1B2", duration: 1 },
-  { code: "BLAST-1D-C3D4", duration: 1 },
-  { code: "BLAST-1D-E5F6", duration: 1 },
-  { code: "BLAST-1D-G7H8", duration: 1 },
-  { code: "BLAST-1D-I9J0", duration: 1 },
-  { code: "BLAST-1D-K1L2", duration: 1 },
-  { code: "BLAST-1D-M3N4", duration: 1 },
-  { code: "BLAST-1D-O5P6", duration: 1 },
-  { code: "BLAST-1D-Q7R8", duration: 1 },
-  { code: "BLAST-1D-S9T0", duration: 1 },
-  { code: "BLAST-1D-U1V2", duration: 1 },
-  { code: "BLAST-1D-W3X4", duration: 1 },
-  { code: "BLAST-1D-Y5Z6", duration: 1 },
-  { code: "BLAST-1D-A7B8", duration: 1 },
-  { code: "BLAST-1D-C9D0", duration: 1 },
-  { code: "BLAST-1D-E1F2", duration: 1 },
-  { code: "BLAST-1D-G3H4", duration: 1 },
-  { code: "BLAST-1D-I5J6", duration: 1 },
-  { code: "BLAST-1D-K7L8", duration: 1 },
-  { code: "BLAST-1D-M9N0", duration: 1 },
-
-  /* ═══ 7 DAY KEYS (20) ═══ */
-  { code: "BLAST-7D-O1P2", duration: 7 },
-  { code: "BLAST-7D-Q3R4", duration: 7 },
-  { code: "BLAST-7D-S5T6", duration: 7 },
-  { code: "BLAST-7D-U7V8", duration: 7 },
-  { code: "BLAST-7D-W9X0", duration: 7 },
-  { code: "BLAST-7D-Y1Z2", duration: 7 },
-  { code: "BLAST-7D-A3B4", duration: 7 },
-  { code: "BLAST-7D-C5D6", duration: 7 },
-  { code: "BLAST-7D-E7F8", duration: 7 },
-  { code: "BLAST-7D-G9H0", duration: 7 },
-  { code: "BLAST-7D-I1J2", duration: 7 },
-  { code: "BLAST-7D-K3L4", duration: 7 },
-  { code: "BLAST-7D-M5N6", duration: 7 },
-  { code: "BLAST-7D-O7P8", duration: 7 },
-  { code: "BLAST-7D-Q9R0", duration: 7 },
-  { code: "BLAST-7D-S1T2", duration: 7 },
-  { code: "BLAST-7D-U3V4", duration: 7 },
-  { code: "BLAST-7D-W5X6", duration: 7 },
-  { code: "BLAST-7D-Y7Z8", duration: 7 },
-  { code: "BLAST-7D-A9B0", duration: 7 },
-
-  /* ═══ 30 DAY KEYS (20) ═══ */
-  { code: "BLAST-30D-C1D2", duration: 30 },
-  { code: "BLAST-30D-E3F4", duration: 30 },
-  { code: "BLAST-30D-G5H6", duration: 30 },
-  { code: "BLAST-30D-I7J8", duration: 30 },
-  { code: "BLAST-30D-K9L0", duration: 30 },
-  { code: "BLAST-30D-M1N2", duration: 30 },
-  { code: "BLAST-30D-O3P4", duration: 30 },
-  { code: "BLAST-30D-Q5R6", duration: 30 },
-  { code: "BLAST-30D-S7T8", duration: 30 },
-  { code: "BLAST-30D-U9V0", duration: 30 },
-  { code: "BLAST-30D-W1X2", duration: 30 },
-  { code: "BLAST-30D-Y3Z4", duration: 30 },
-  { code: "BLAST-30D-A5B6", duration: 30 },
-  { code: "BLAST-30D-C7D8", duration: 30 },
-  { code: "BLAST-30D-E9F0", duration: 30 },
-  { code: "BLAST-30D-G1H2", duration: 30 },
-  { code: "BLAST-30D-I3J4", duration: 30 },
-  { code: "BLAST-30D-K5L6", duration: 30 },
-  { code: "BLAST-30D-M7N8", duration: 30 },
-  { code: "BLAST-30D-O9P0", duration: 30 }
+  { code: "BLAST-1D-A1B2", duration: 1 },{ code: "BLAST-1D-C3D4", duration: 1 },
+  { code: "BLAST-1D-E5F6", duration: 1 },{ code: "BLAST-1D-G7H8", duration: 1 },
+  { code: "BLAST-1D-I9J0", duration: 1 },{ code: "BLAST-1D-K1L2", duration: 1 },
+  { code: "BLAST-1D-M3N4", duration: 1 },{ code: "BLAST-1D-O5P6", duration: 1 },
+  { code: "BLAST-1D-Q7R8", duration: 1 },{ code: "BLAST-1D-S9T0", duration: 1 },
+  { code: "BLAST-1D-U1V2", duration: 1 },{ code: "BLAST-1D-W3X4", duration: 1 },
+  { code: "BLAST-1D-Y5Z6", duration: 1 },{ code: "BLAST-1D-A7B8", duration: 1 },
+  { code: "BLAST-1D-C9D0", duration: 1 },{ code: "BLAST-1D-E1F2", duration: 1 },
+  { code: "BLAST-1D-G3H4", duration: 1 },{ code: "BLAST-1D-I5J6", duration: 1 },
+  { code: "BLAST-1D-K7L8", duration: 1 },{ code: "BLAST-1D-M9N0", duration: 1 },
+  { code: "BLAST-7D-O1P2", duration: 7 },{ code: "BLAST-7D-Q3R4", duration: 7 },
+  { code: "BLAST-7D-S5T6", duration: 7 },{ code: "BLAST-7D-U7V8", duration: 7 },
+  { code: "BLAST-7D-W9X0", duration: 7 },{ code: "BLAST-7D-Y1Z2", duration: 7 },
+  { code: "BLAST-7D-A3B4", duration: 7 },{ code: "BLAST-7D-C5D6", duration: 7 },
+  { code: "BLAST-7D-E7F8", duration: 7 },{ code: "BLAST-7D-G9H0", duration: 7 },
+  { code: "BLAST-7D-I1J2", duration: 7 },{ code: "BLAST-7D-K3L4", duration: 7 },
+  { code: "BLAST-7D-M5N6", duration: 7 },{ code: "BLAST-7D-O7P8", duration: 7 },
+  { code: "BLAST-7D-Q9R0", duration: 7 },{ code: "BLAST-7D-S1T2", duration: 7 },
+  { code: "BLAST-7D-U3V4", duration: 7 },{ code: "BLAST-7D-W5X6", duration: 7 },
+  { code: "BLAST-7D-Y7Z8", duration: 7 },{ code: "BLAST-7D-A9B0", duration: 7 },
+  { code: "BLAST-30D-C1D2", duration: 30 },{ code: "BLAST-30D-E3F4", duration: 30 },
+  { code: "BLAST-30D-G5H6", duration: 30 },{ code: "BLAST-30D-I7J8", duration: 30 },
+  { code: "BLAST-30D-K9L0", duration: 30 },{ code: "BLAST-30D-M1N2", duration: 30 },
+  { code: "BLAST-30D-O3P4", duration: 30 },{ code: "BLAST-30D-Q5R6", duration: 30 },
+  { code: "BLAST-30D-S7T8", duration: 30 },{ code: "BLAST-30D-U9V0", duration: 30 },
+  { code: "BLAST-30D-W1X2", duration: 30 },{ code: "BLAST-30D-Y3Z4", duration: 30 },
+  { code: "BLAST-30D-A5B6", duration: 30 },{ code: "BLAST-30D-C7D8", duration: 30 },
+  { code: "BLAST-30D-E9F0", duration: 30 },{ code: "BLAST-30D-G1H2", duration: 30 },
+  { code: "BLAST-30D-I3J4", duration: 30 },{ code: "BLAST-30D-K5L6", duration: 30 },
+  { code: "BLAST-30D-M7N8", duration: 30 },{ code: "BLAST-30D-O9P0", duration: 30 }
 ];
-
-/* Fast lookup map (built once) */
 const KEYS_MAP = {};
 KEYS_DB.forEach(k => { KEYS_MAP[k.code.toUpperCase()] = k.duration; });
+
+/* ═══════════════════════════════════════════════════════════════════
+   REGEDIT OPTIONS — baked into every exported localConfig.json
+   ═══════════════════════════════════════════════════════════════════ */
+const REGEDIT_OPTIONS = {
+  touch_sensitivity:       "100",
+  touch_pressure_scale:    "0.001",
+  windows_touch_slop:      "0",
+  view_touch_slop:         "2",
+  pointer_speed:           "7",
+  aim_lock_stability:      "1",
+  stabilize_xy_axis:       "true",
+  reduce_recoil_delay:     "0",
+  "touch.deviceProduct":   "touchscreen",
+  "touch.orientationAware":"1",
+  "touch.size.calibration":"geometric",
+  "touch.size.scale":      "1.0",
+  "touch.size.bias":       "0",
+  "touch.pressure.calibration":"amplitude",
+  "touch.gesture.detector":"1",
+  "ro.hw.touch.high_rate": "true",
+  "persist.sys.touch.performance":"1",
+  "debug.performance.tuning":"1",
+  "video.accelerate.hw":   "1"
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   FPS ENGINE — background refresh + RAM clean every 60s
+   ═══════════════════════════════════════════════════════════════════ */
+let fpsEngineTimer = null;
+let ramFreedTotal = 0;
+let cycleSeconds = 60;
+let cycleCounter = 0;
+
+function startFpsEngine(){
+  if(fpsEngineTimer) return;
+  cycleCounter = 0;
+  updateNextCycle();
+  fpsEngineTimer = setInterval(() => {
+    cycleCounter++;
+    if(cycleCounter >= cycleSeconds){
+      cycleCounter = 0;
+      runFpsRefreshCycle();
+    }
+    updateNextCycle();
+  }, 1000);
+
+  // Run once immediately on login
+  setTimeout(runFpsRefreshCycle, 800);
+}
+
+function stopFpsEngine(){
+  if(fpsEngineTimer){
+    clearInterval(fpsEngineTimer);
+    fpsEngineTimer = null;
+  }
+}
+
+function runFpsRefreshCycle(){
+  // FPS refresh timestamp
+  document.getElementById('lastFps').textContent = new Date().toLocaleTimeString();
+
+  // Memory clean — browser-side best effort
+  let freed = cleanMemory();
+  ramFreedTotal += freed;
+  document.getElementById('lastRam').textContent  = new Date().toLocaleTimeString();
+  document.getElementById('ramFreed').textContent = ramFreedTotal.toFixed(2) + ' MB';
+
+  // Re-apply regedit perf hints (localStorage already has them, but re-affirm)
+  try{
+    localStorage.setItem('blast_regedit', JSON.stringify(REGEDIT_OPTIONS));
+  }catch(e){}
+
+  // Re-request animation frame budget (harmless — makes browser repaint)
+  requestAnimationFrame(()=>{});
+}
+
+/* Browser-side memory clean (best effort — real cleanup needs native) */
+function cleanMemory(){
+  try{
+    // Drop large DOM references
+    if('gc' in window && typeof window.gc === 'function'){
+      window.gc();
+    }
+    // Clear idle event listeners cache
+    if(performance && performance.clearMarks){
+      performance.clearMarks();
+      performance.clearMeasures();
+    }
+    // Estimate freed memory from performance.memory (Chrome only)
+    let freed = 0;
+    if(performance.memory){
+      freed = Math.random() * 2 + 0.5; // simulated freed MB
+    } else {
+      freed = Math.random() * 1.5 + 0.3;
+    }
+    return freed;
+  }catch(e){ return 0; }
+}
+
+function updateNextCycle(){
+  const el = document.getElementById('nextCycle');
+  if(el) el.textContent = (cycleSeconds - cycleCounter) + 's';
+}
 
 /* ═══ Helpers ═══ */
 function cleanKey(raw){
@@ -255,6 +363,18 @@ function saveDomain(){
   localStorage.setItem('blast_domain', v);
 }
 
+/* ═══ PERSISTENT SESSION ═══ */
+function getValidSession(){
+  try{
+    const key = localStorage.getItem('blast_key');
+    const end = parseInt(localStorage.getItem('blast_end') || '0');
+    if(!key || !end) return null;
+    if(Date.now() >= end) return null;
+    if(KEYS_MAP[key] === undefined) return null;
+    return { key, end, duration: KEYS_MAP[key] };
+  }catch(e){ return null; }
+}
+
 /* ═══ LOGIN ═══ */
 function login(){
   let input = document.getElementById('keyInput');
@@ -267,7 +387,7 @@ function login(){
     return;
   }
 
-  const duration = KEYS_MAP[key]; // undefined if key not in list
+  const duration = KEYS_MAP[key];
   if(duration === undefined){
     input.classList.add('error');
     document.getElementById('loginMsg').textContent = 'Key not found — purchase a valid key';
@@ -277,15 +397,13 @@ function login(){
   input.classList.remove('error');
   document.getElementById('loginMsg').textContent = '';
 
-  /* ═══ Session storage — active session only ═══ */
   const now = Date.now();
-  sessionStorage.setItem('blast_key',  key);
-  sessionStorage.setItem('blast_start', now);
-  sessionStorage.setItem('blast_end',   now + duration * 24 * 3600 * 1000);
-  sessionStorage.setItem('blast_dur',   String(duration));
-
-  /* Remember domain (persistent) */
+  localStorage.setItem('blast_key',   key);
+  localStorage.setItem('blast_start', now);
+  localStorage.setItem('blast_end',   now + duration * 24 * 3600 * 1000);
+  localStorage.setItem('blast_dur',   String(duration));
   localStorage.setItem('blast_domain', document.getElementById('domainInputLogin').value.trim());
+  localStorage.setItem('blast_regedit', JSON.stringify(REGEDIT_OPTIONS));
 
   showConfig();
 }
@@ -296,7 +414,7 @@ function showConfig(){
   document.getElementById('configPage').classList.remove('hidden');
 
   document.getElementById('welcomeKey').textContent =
-    sessionStorage.getItem('blast_key') || 'BLAST-XXXX';
+    localStorage.getItem('blast_key') || 'BLAST-XXXX';
 
   let savedPkg = localStorage.getItem('blast_pkg') || 'com.dts.freefireth';
   document.getElementById('pkgInput').value = savedPkg;
@@ -306,39 +424,79 @@ function showConfig(){
   document.getElementById('domainInput').value = savedDomain;
   document.getElementById('domainVal').textContent = savedDomain || '—';
 
+  restoreOptions();
   tick();
+
+  // ✅ Start the 60-second background FPS + RAM engine
+  startFpsEngine();
 }
 
-function logout(){
-  sessionStorage.removeItem('blast_key');
-  sessionStorage.removeItem('blast_start');
-  sessionStorage.removeItem('blast_end');
-  sessionStorage.removeItem('blast_dur');
-
-  document.getElementById('configPage').classList.add('hidden');
-  document.getElementById('loginPage').classList.remove('hidden');
-  document.getElementById('keyInput').value = '';
-  document.getElementById('loginMsg').textContent = '';
+/* ═══ OPTIONS ═══ */
+function restoreOptions(){
+  try{
+    const saved = JSON.parse(localStorage.getItem('blast_options') || '{}');
+    setOpt('aim',  !!saved.aim);
+    setOpt('fps',  !!saved.fps);
+    const safe = !!saved.safe;
+    document.getElementById('swSafe').classList.toggle('on', safe);
+    document.getElementById('safeDot').classList.toggle('on', safe);
+    applySafeState(safe);
+  }catch(e){ applySafeState(false); }
+}
+function persistOptions(){
+  const data = {
+    aim:  document.getElementById('swAim').classList.contains('on'),
+    fps:  document.getElementById('swFps').classList.contains('on'),
+    safe: document.getElementById('swSafe').classList.contains('on')
+  };
+  localStorage.setItem('blast_options', JSON.stringify(data));
 }
 
-/* ═══ Menu toggles ═══ */
-function setOpt(which, on){
-  let sw  = document.getElementById(which==='aim'?'swAim':which==='holo'?'swHolo':'swFps');
-  let opt = document.getElementById(which==='aim'?'optAim':which==='holo'?'optHolo':'optFps');
-  sw.classList.toggle('on', on);
-  opt.classList.toggle('active', on);
+/* ═══ HOLO SAFE ═══ */
+function applySafeState(on){
+  const banner   = document.getElementById('lockBanner');
+  const lockText = document.getElementById('lockText');
+  const dlBtn    = document.getElementById('downloadBtn');
+  const pkgStatus = document.getElementById('pkgStatus');
+
+  if(on){
+    banner.classList.add('unlocked');
+    lockText.textContent = 'localConfig.json UNLOCKED — access granted';
+    dlBtn.disabled = false;
+    pkgStatus.classList.remove('locked');
+    pkgStatus.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>PACKAGE ACCESSIBLE — com.dts.freefireth • com.dtsapp.h</span>';
+  } else {
+    banner.classList.remove('unlocked');
+    lockText.textContent = 'localConfig.json LOCKED — toggle HOLO SAFE to unlock';
+    dlBtn.disabled = true;
+    pkgStatus.classList.add('locked');
+    pkgStatus.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>PACKAGE LOCKED — HOLO SAFE required</span>';
+  }
 }
-function toggleOpt(which){
-  let sw  = document.getElementById(which==='aim'?'swAim':which==='holo'?'swHolo':'swFps');
-  let opt = document.getElementById(which==='aim'?'optAim':which==='holo'?'optHolo':'optFps');
-  sw.classList.toggle('on');
-  opt.classList.toggle('active');
-}
+
 function toggleSafe(e){
   e.stopPropagation();
   let sw = document.getElementById('swSafe');
   sw.classList.toggle('on');
-  document.getElementById('safeDot').classList.toggle('on', sw.classList.contains('on'));
+  const on = sw.classList.contains('on');
+  document.getElementById('safeDot').classList.toggle('on', on);
+  applySafeState(on);
+  persistOptions();
+}
+
+/* ═══ Menu toggles ═══ */
+function setOpt(which, on){
+  let sw  = document.getElementById(which==='aim'?'swAim':'swFps');
+  let opt = document.getElementById(which==='aim'?'optAim':'optFps');
+  sw.classList.toggle('on', on);
+  opt.classList.toggle('active', on);
+}
+function toggleOpt(which){
+  let sw  = document.getElementById(which==='aim'?'swAim':'swFps');
+  let opt = document.getElementById(which==='aim'?'optAim':'optFps');
+  sw.classList.toggle('on');
+  opt.classList.toggle('active');
+  persistOptions();
 }
 function updatePkg(){
   let v = document.getElementById('pkgInput').value.trim() || 'com.dts.freefireth';
@@ -346,26 +504,38 @@ function updatePkg(){
   localStorage.setItem('blast_pkg', v);
 }
 
-/* ═══ Config export / import ═══ */
+/* ═══ CONFIG export / import ═══ */
 function buildConfig(){
   return {
     app: "BLAST CONFIG",
-    version: "1.0",
-    key: sessionStorage.getItem('blast_key') || document.getElementById('keyInput').value.trim(),
+    version: "1.1",
+    site: OFFICIAL_SITE,
+    key: localStorage.getItem('blast_key') || document.getElementById('keyInput').value.trim(),
     domain: getDomain(),
     package_display_only: document.getElementById('pkgVal').textContent,
-    safe_mode: document.getElementById('swSafe').classList.contains('on'),
+    packages_available: ["com.dts.freefireth", "com.dtsapp.h"],
+    holo_safe: document.getElementById('swSafe').classList.contains('on'),
     options: {
       aim_70:       document.getElementById('swAim').classList.contains('on'),
-      holo_weapon:  document.getElementById('swHolo').classList.contains('on'),
       fps_boost_60: document.getElementById('swFps').classList.contains('on')
     },
-    fps: { target_fps: 60, profile: "balanced" },
+    fps: {
+      target_fps: 60,
+      profile: "balanced",
+      refresh_interval_seconds: 60,
+      memory_clean: true
+    },
+    regedit_options: REGEDIT_OPTIONS,
+    exported_at: new Date().toISOString(),
     note: "Demo UI config only - does not modify any game"
   };
 }
 
 function downloadLocalConfig(){
+  if(!document.getElementById('swSafe').classList.contains('on')){
+    document.getElementById('configMsg').textContent = 'HOLO SAFE must be ON to download.';
+    return;
+  }
   let data = JSON.stringify(buildConfig(), null, 2);
   let blob = new Blob([data], {type:'application/json'});
   let a = document.createElement('a');
@@ -383,9 +553,7 @@ function importConfig(event, fromLogin){
     try{
       let cfg = JSON.parse(reader.result);
 
-      if(cfg.key){
-        document.getElementById('keyInput').value = cfg.key;
-      }
+      if(cfg.key) document.getElementById('keyInput').value = cfg.key;
       if(cfg.domain){
         document.getElementById('domainInputLogin').value = cfg.domain;
         document.getElementById('domainInput').value = cfg.domain;
@@ -399,13 +567,17 @@ function importConfig(event, fromLogin){
       }
       if(cfg.options){
         setOpt('aim',  !!cfg.options.aim_70);
-        setOpt('holo', !!cfg.options.holo_weapon);
         setOpt('fps',  !!cfg.options.fps_boost_60);
       }
-      if(typeof cfg.safe_mode === 'boolean'){
-        document.getElementById('swSafe').classList.toggle('on', cfg.safe_mode);
-        document.getElementById('safeDot').classList.toggle('on', cfg.safe_mode);
+      if(typeof cfg.holo_safe === 'boolean'){
+        document.getElementById('swSafe').classList.toggle('on', cfg.holo_safe);
+        document.getElementById('safeDot').classList.toggle('on', cfg.holo_safe);
+        applySafeState(cfg.holo_safe);
       }
+      if(cfg.regedit_options){
+        localStorage.setItem('blast_regedit', JSON.stringify(cfg.regedit_options));
+      }
+      persistOptions();
 
       if(fromLogin) document.getElementById('loginMsg').textContent = 'File loaded! Press LOGIN to enter.';
       else          document.getElementById('configMsg').textContent = 'File loaded! Key + Domain + Options filled.';
@@ -419,18 +591,36 @@ function importConfig(event, fromLogin){
   event.target.value = '';
 }
 
-/* ═══ Live timer ═══ */
+/* ═══ LOGOUT ═══ */
+function logout(){
+  stopFpsEngine();
+
+  localStorage.removeItem('blast_key');
+  localStorage.removeItem('blast_start');
+  localStorage.removeItem('blast_end');
+  localStorage.removeItem('blast_dur');
+
+  document.getElementById('configPage').classList.add('hidden');
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('keyInput').value = '';
+  document.getElementById('loginMsg').textContent = '';
+
+  setTimeout(() => { window.location.href = OFFICIAL_SITE; }, 300);
+}
+
+/* ═══ LIVE TIMER ═══ */
 function tick(){
-  let end = parseInt(sessionStorage.getItem('blast_end') || '0');
+  let end = parseInt(localStorage.getItem('blast_end') || '0');
   if(!end) return;
   let diff = end - Date.now();
 
   if(diff <= 0){
     document.getElementById('timeLeft').textContent = 'EXPIRED';
     document.getElementById('status').textContent = 'Key expired';
+    stopFpsEngine();
     setTimeout(()=>{
       logout();
-      document.getElementById('loginMsg').textContent = 'Key expired';
+      alert('Key expired. Redirecting to official site.');
     }, 1200);
     return;
   }
@@ -446,28 +636,15 @@ function tick(){
 
   document.getElementById('timeLeft').textContent = display;
 
-  const dur = sessionStorage.getItem('blast_dur') || '';
+  const dur = localStorage.getItem('blast_dur') || '';
   document.getElementById('status').textContent =
-    'Active • ' + (sessionStorage.getItem('blast_key')||'') + ' (' + dur + 'd) • ' + h + 'h ' + m + 'm left';
+    'Active • ' + (localStorage.getItem('blast_key')||'') + ' (' + dur + 'd) • ' + h + 'h ' + m + 'm left';
 }
 
-/* ═══ Auto-restore session on load ═══ */
+/* ═══ AUTO-RESTORE ═══ */
 (function(){
-  let end = parseInt(sessionStorage.getItem('blast_end') || '0');
-  let key = sessionStorage.getItem('blast_key');
-
-  if(end && key && Date.now() < end){
-    // Re-validate key still exists in DB
-    if(KEYS_MAP[key] !== undefined){
-      showConfig();
-      return;
-    }
-  }
-  // Session invalid → clean
-  sessionStorage.removeItem('blast_key');
-  sessionStorage.removeItem('blast_start');
-  sessionStorage.removeItem('blast_end');
-  sessionStorage.removeItem('blast_dur');
+  const s = getValidSession();
+  if(s) showConfig();
 })();
 
 setInterval(()=>{
@@ -479,4 +656,4 @@ document.getElementById('keyInput').addEventListener('keydown', e=>{
 });
 </script>
 </body>
-  </html>
+                                                                    </html>
