@@ -69,14 +69,43 @@ input:disabled{opacity:.4;cursor:not-allowed}
 .pkg-status{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.5px;margin-top:8px;color:#4ade80}
 .pkg-status svg{width:12px;height:12px}
 .pkg-status.locked{color:#ff7777}
-.engine{margin-top:14px;padding:14px;border:1px solid #2a2a2a;border-radius:16px;background:#0f1a0f}
-.engine-title{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:1.2px;color:#4ade80;margin-bottom:10px}
+
+.engine{padding:14px;border:1px solid #2a2a2a;border-radius:16px;background:#0f1a0f;margin-top:8px}
+.engine-title{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:1.2px;color:#4ade80;margin-bottom:12px}
 .engine-title .pulse{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.ram-bar-wrap{margin-bottom:12px}
+.ram-bar-label{display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:.8px;color:#a1a1aa;margin-bottom:6px}
+.ram-bar-label span:last-child{color:#4ade80;font-family:'JetBrains Mono',monospace}
+.ram-bar{height:8px;background:#1a1a1a;border-radius:99px;overflow:hidden;position:relative;border:1px solid #2a2a2a}
+.ram-bar-fill{height:100%;background:linear-gradient(90deg,#4ade80,#22c55e);border-radius:99px;transition:width .6s ease;box-shadow:0 0 10px rgba(74,222,128,0.5)}
+.ram-bar-reserve{position:absolute;top:0;right:0;height:100%;background:rgba(255,255,255,0.15);border-left:1px solid rgba(255,255,255,0.4)}
+.ram-bar-labels{display:flex;justify-content:space-between;font-size:9px;color:#525252;margin-top:4px;font-family:'JetBrains Mono',monospace}
+
 .engine-row{display:flex;justify-content:space-between;font-size:11px;padding:6px 0;border-bottom:1px solid #1a1a1a}
 .engine-row:last-child{border-bottom:none}
 .engine-row span:first-child{color:#a1a1aa}
-.engine-row span:last-child{color:#4ade80;font-family:'JetBrains Mono',monospace;font-weight:700}
+.engine-row span:last-child{color:#4ade80;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right;max-width:60%}
+
+.device-panel{padding:14px;border:1px solid #2a2a2a;border-radius:16px;background:#0a0a14;margin-top:8px}
+.device-panel .engine-title{color:#6ea8ff}
+.device-panel .engine-title .pulse{background:#6ea8ff;box-shadow:0 0 8px #6ea8ff}
+.device-row{display:flex;justify-content:space-between;font-size:11px;padding:6px 0;border-bottom:1px solid #1a1a1a}
+.device-row:last-child{border-bottom:none}
+.device-row span:first-child{color:#a1a1aa}
+.device-row span:last-child{color:#6ea8ff;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right;max-width:60%;word-break:break-word}
+
+.tier{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:9px;font-weight:900;letter-spacing:.8px;text-transform:uppercase}
+.tier.low{background:#4a1f1f;color:#ff9999;border:1px solid #7a2f2f}
+.tier.mid{background:#4a3f1f;color:#ffcc66;border:1px solid #7a652f}
+.tier.high{background:#1f4a2a;color:#4ade80;border:1px solid #2f7a4a}
+.tier.ultra{background:#1f2f4a;color:#6ea8ff;border:1px solid #2f4f7a}
+
+.ip-row{display:flex;justify-content:space-between;font-size:11px;padding:6px 0;border-bottom:1px solid #1a1a1a}
+.ip-row:last-child{border-bottom:none}
+.ip-row span:first-child{color:#a1a1aa}
+.ip-row span:last-child{color:#ff8ed4;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right}
 </style>
 </head>
 <body>
@@ -92,8 +121,6 @@ input:disabled{opacity:.4;cursor:not-allowed}
   <div class="card">
     <label>ENTER YOUR KEY</label>
     <input id="keyInput" placeholder="BLAST-XXXX" autocomplete="off">
-    <label>DOMAIN NAME</label>
-    <input id="domainInputLogin" placeholder="example.com" autocomplete="off">
     <button class="btn" onclick="login()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       LOGIN
@@ -101,7 +128,7 @@ input:disabled{opacity:.4;cursor:not-allowed}
     <div class="msg" id="loginMsg"></div>
     <button class="btn2" onclick="document.getElementById('uploadInputLogin').click()">UPLOAD localConfig.json</button>
     <input type="file" id="uploadInputLogin" class="file-input" accept=".json,application/json" onchange="importConfig(event, true)">
-    <div class="box-note" style="text-align:center">Upload fichye ki fin telechaje a — li ap ranpli Key + Domain pou ou.</div>
+    <div class="box-note" style="text-align:center">Upload fichye ki fin telechaje a — li ap ranpli Key pou ou.</div>
   </div>
   <div class="powered"><div class="p1">POWERED BY</div><div class="p2">BLAST <span>TECHNOLOGY</span></div></div>
 </div>
@@ -120,11 +147,52 @@ input:disabled{opacity:.4;cursor:not-allowed}
     <p id="status">Active</p>
   </div>
 
-  <!-- FPS ENGINE STATUS -->
+  <!-- DEVICE DETECTION -->
   <div class="card">
-    <h3>FPS ENGINE &nbsp;•&nbsp; <span>BACKGROUND</span></h3>
-    <div class="engine" id="engineBox">
-      <div class="engine-title"><span class="pulse"></span> ACTIVE — REFRESH EVERY 60s</div>
+    <h3>DEVICE DETECTION &nbsp;•&nbsp; <span id="tierBadgeWrap"><span class="tier mid" id="tierBadge">DETECTING</span></span></h3>
+    <div class="device-panel">
+      <div class="engine-title"><span class="pulse"></span> DETECTED HARDWARE</div>
+      <div class="device-row"><span>Device Model</span><span id="devModel">—</span></div>
+      <div class="device-row"><span>Android Version</span><span id="devAndroid">—</span></div>
+      <div class="device-row"><span>CPU Cores</span><span id="devCores">—</span></div>
+      <div class="device-row"><span>Total RAM</span><span id="devRam">—</span></div>
+      <div class="device-row"><span>Reserved for Game</span><span id="devReserved">—</span></div>
+      <div class="device-row"><span>Target FPS</span><span id="devFps">—</span></div>
+      <div class="device-row"><span>Refresh Rate</span><span id="devRefresh">—</span></div>
+    </div>
+
+    <!-- IP DETECTION -->
+    <div class="device-panel" style="background:#140a14;margin-top:10px">
+      <div class="engine-title" style="color:#ff8ed4"><span class="pulse" style="background:#ff8ed4;box-shadow:0 0 8px #ff8ed4"></span> NETWORK</div>
+      <div class="ip-row"><span>IP Address</span><span id="devIP">Detecting...</span></div>
+      <div class="ip-row"><span>ISP / Provider</span><span id="devISP">—</span></div>
+      <div class="ip-row"><span>Country</span><span id="devCountry">—</span></div>
+      <div class="ip-row"><span>City / Region</span><span id="devCity">—</span></div>
+      <div class="ip-row"><span>Connection</span><span id="devConn">—</span></div>
+    </div>
+  </div>
+
+  <!-- FPS ENGINE -->
+  <div class="card">
+    <h3>FPS ENGINE &nbsp;•&nbsp; <span>60s CYCLE</span></h3>
+    <div class="engine">
+      <div class="engine-title"><span class="pulse"></span> ACTIVE — AUTO REFRESH</div>
+
+      <div class="ram-bar-wrap">
+        <div class="ram-bar-label">
+          <span>RAM AVAILABLE</span>
+          <span id="ramPercent">—</span>
+        </div>
+        <div class="ram-bar">
+          <div class="ram-bar-fill" id="ramBarFill" style="width:70%"></div>
+          <div class="ram-bar-reserve" id="ramBarReserve" style="width:30%"></div>
+        </div>
+        <div class="ram-bar-labels">
+          <span id="ramUsedLabel">0 MB</span>
+          <span id="ramTotalLabel">0 MB</span>
+        </div>
+      </div>
+
       <div class="engine-row"><span>Last FPS Refresh</span><span id="lastFps">—</span></div>
       <div class="engine-row"><span>Last Memory Clean</span><span id="lastRam">—</span></div>
       <div class="engine-row"><span>RAM Freed (session)</span><span id="ramFreed">0 MB</span></div>
@@ -145,9 +213,22 @@ input:disabled{opacity:.4;cursor:not-allowed}
       <div class="opt" id="optFps" onclick="toggleOpt('fps')">
         <div class="opt-left">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-          <div><b>60 FPS BOOST</b><small>Performance profile</small></div>
+          <div><b>60 FPS BOOST</b><small>Force RAM 3GB for game</small></div>
         </div>
         <div class="right"><span class="pct">60 FPS</span><div class="switch" id="swFps"></div></div>
+      </div>
+
+      <div class="opt" id="optRegedit" onclick="toggleOpt('regedit')">
+        <div class="opt-left">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#b48eff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"/>
+              <line x1="12" y1="19" x2="20" y2="19"/>
+            </svg>
+          </div>
+          <div><b>REGEDIT</b><small>Touch + performance tuning</small></div>
+        </div>
+        <div class="right"><span class="pct">TUNE</span><div class="switch" id="swRegedit"></div></div>
       </div>
     </div>
 
@@ -168,10 +249,7 @@ input:disabled{opacity:.4;cursor:not-allowed}
     </div>
 
     <div class="box">
-      <label style="margin-top:0">DOMAIN NAME</label>
-      <input id="domainInput" value="" placeholder="example.com" oninput="saveDomain()">
-      <div class="box-val" id="domainVal">—</div>
-      <label>PACKAGE NAME (DISPLAY ONLY)</label>
+      <label style="margin-top:0">PACKAGE NAME (DISPLAY ONLY)</label>
       <input id="pkgInput" value="com.dts.freefireth" oninput="updatePkg()">
       <div class="box-val" id="pkgVal">com.dts.freefireth</div>
       <div class="pkg-status locked" id="pkgStatus">
@@ -188,10 +266,12 @@ input:disabled{opacity:.4;cursor:not-allowed}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       DOWNLOAD localConfig.json
     </button>
+    <button class="btn2" onclick="refreshDevice()">🔄 REFRESH DEVICE INFO</button>
     <button class="btn2" onclick="document.getElementById('uploadInput').click()">UPLOAD localConfig.json</button>
     <input type="file" id="uploadInput" class="file-input" accept=".json,application/json" onchange="importConfig(event, false)">
     <div class="msg ok" id="configMsg"></div>
-    <div class="box-note" style="text-align:center">Holo Safe ON = file available. OFF = locked.</div>
+    <div class="box-note" style="text-align:center">Holo Safe ON = file available. OFF = locked.<br>Device + IP info auto-injected into JSON.</div>
+    <a href="install.html" style="display:block;text-align:center;margin-top:10px;font-size:11px;color:#6ea8ff;text-decoration:none;font-weight:700;letter-spacing:.5px">📖 HOW TO INSTALL ON ANDROID →</a>
   </div>
 
   <div class="safe"><span class="dot"></span> FULL SAFE &nbsp;•&nbsp; JUST A CONFIG &nbsp;•&nbsp; BLAST CONFIG</div>
@@ -202,9 +282,10 @@ input:disabled{opacity:.4;cursor:not-allowed}
 </div>
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   OFFICIAL SITE
+   CONSTANTS
    ═══════════════════════════════════════════════════════════════════ */
 const OFFICIAL_SITE = "https://fake-hack-three.vercel.app/";
+const RESERVED_RAM_MB = 3000;
 
 /* ═══════════════════════════════════════════════════════════════════
    60 PRE-LOADED KEYS
@@ -245,7 +326,7 @@ const KEYS_MAP = {};
 KEYS_DB.forEach(k => { KEYS_MAP[k.code.toUpperCase()] = k.duration; });
 
 /* ═══════════════════════════════════════════════════════════════════
-   REGEDIT OPTIONS — baked into every exported localConfig.json
+   REGEDIT OPTIONS
    ═══════════════════════════════════════════════════════════════════ */
 const REGEDIT_OPTIONS = {
   touch_sensitivity:       "100",
@@ -270,7 +351,204 @@ const REGEDIT_OPTIONS = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   FPS ENGINE — background refresh + RAM clean every 60s
+   GLOBAL STATE
+   ═══════════════════════════════════════════════════════════════════ */
+let deviceInfo = {
+  model: "Unknown Android",
+  android: "Unknown",
+  cores: 4,
+  ramGB: 4,
+  tier: "mid",
+  targetFPS: 60,
+  refreshRate: 60,
+  brand: "Unknown",
+  manufacturer: "Unknown"
+};
+
+let networkInfo = {
+  ip: "unknown",
+  isp: "—",
+  country: "—",
+  city: "—",
+  region: "—",
+  connection: "—"
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   DEVICE DETECTION (enhanced)
+   ═══════════════════════════════════════════════════════════════════ */
+function detectDevice(){
+  const ua = navigator.userAgent;
+
+  // ── Model extraction with brand patterns ──
+  let model = "Unknown Android";
+  let brand = "Unknown";
+  let manufacturer = "Unknown";
+
+  // Samsung
+  let m = ua.match(/(SM-[A-Z0-9]+)/i);
+  if(m){ model = m[1]; brand = "Samsung"; manufacturer = "Samsung"; }
+
+  // Google Pixel
+  if(!m && (m = ua.match(/(Pixel\s+[\dA-Za-z\s]+?)(?:\s+Build|\))/i))){
+    model = m[1].trim(); brand = "Google"; manufacturer = "Google";
+  }
+
+  // Xiaomi / Redmi / POCO
+  if(!m && (m = ua.match(/(Redmi[\s\dA-Za-z]+?|POCO[\s\dA-Za-z]+?|Mi\s[\dA-Za-z\s]+?)(?:\s+Build|\))/i))){
+    model = m[1].trim(); brand = "Xiaomi"; manufacturer = "Xiaomi";
+  }
+
+  // OnePlus
+  if(!m && (m = ua.match(/(OnePlus\s+[\dA-Za-z]+|IN\d{4}|LE\d{4}|NE\d{4})/i))){
+    model = m[1].trim(); brand = "OnePlus"; manufacturer = "OnePlus";
+  }
+
+  // Huawei / Honor
+  if(!m && (m = ua.match(/(HUAWEI[\s\dA-Za-z]+?|Honor[\s\dA-Za-z]+?)(?:\s+Build|\))/i))){
+    model = m[1].trim(); brand = "Huawei"; manufacturer = "Huawei";
+  }
+
+  // Oppo / Realme / Vivo
+  if(!m && (m = ua.match(/(CPH\d+|RMX\d+|V\d{4}|OPPO[\s\dA-Za-z]+?|realme[\s\dA-Za-z]+?)(?:\s+Build|\))/i))){
+    model = m[1].trim();
+    brand = /RMX/i.test(m[1]) ? "Realme" : "Oppo";
+    manufacturer = brand;
+  }
+
+  // Motorola
+  if(!m && (m = ua.match(/(moto\s+[\dA-Za-z]+?)(?:\s+Build|\))/i))){
+    model = m[1].trim(); brand = "Motorola"; manufacturer = "Motorola";
+  }
+
+  // Generic fallback
+  if(!m){
+    const generic = ua.match(/Android [\d.]+;\s*([^;)]+?)\s*Build/i)
+                 || ua.match(/Android [\d.]+;\s*([^;)]+?)\)/i);
+    if(generic) model = generic[1].replace(/Build\/.*/,'').trim();
+  }
+
+  // Clean up
+  model = model.replace(/\s+/g,' ').trim();
+
+  // ── Android version ──
+  const av = ua.match(/Android\s+([\d.]+)/i);
+  const android = av ? av[1] : "Unknown";
+
+  // ── Cores ──
+  const cores = navigator.hardwareConcurrency || 4;
+
+  // ── RAM ──
+  const ramGB = navigator.deviceMemory || 4;
+
+  // ── Refresh rate ──
+  let refreshRate = 60;
+  if(screen && screen.refreshRate){
+    refreshRate = Math.round(screen.refreshRate);
+  }
+
+  // ── Tier ──
+  let tier = "mid", targetFPS = 60;
+  if(ramGB >= 8 && cores >= 8)        { tier = "ultra"; targetFPS = 90; }
+  else if(ramGB >= 6 && cores >= 6)   { tier = "high";  targetFPS = 60; }
+  else if(ramGB >= 4 && cores >= 4)   { tier = "mid";   targetFPS = 60; }
+  else                                { tier = "low";   targetFPS = 30; }
+
+  deviceInfo = { model, android, cores, ramGB, tier, targetFPS, refreshRate, brand, manufacturer };
+  applyDeviceToUI();
+  saveDeviceToStorage();
+}
+
+function applyDeviceToUI(){
+  document.getElementById('devModel').textContent = deviceInfo.model;
+  document.getElementById('devAndroid').textContent = "Android " + deviceInfo.android;
+  document.getElementById('devCores').textContent = deviceInfo.cores + " cores";
+  document.getElementById('devRam').textContent = deviceInfo.ramGB + " GB";
+  document.getElementById('devReserved').textContent = "3.0 GB";
+  document.getElementById('devFps').textContent = deviceInfo.targetFPS + " FPS";
+  document.getElementById('devRefresh').textContent = deviceInfo.refreshRate + " Hz";
+
+  const badge = document.getElementById('tierBadge');
+  badge.className = 'tier ' + deviceInfo.tier;
+  badge.textContent = deviceInfo.tier.toUpperCase();
+
+  updateRamBar();
+}
+
+function updateRamBar(){
+  const totalMB = deviceInfo.ramGB * 1024;
+  const reservedMB = Math.min(RESERVED_RAM_MB, Math.floor(totalMB * 0.6));
+  const availableMB = totalMB - reservedMB;
+  const percentAvailable = Math.round((availableMB / totalMB) * 100);
+
+  document.getElementById('ramBarFill').style.width = percentAvailable + '%';
+  document.getElementById('ramBarReserve').style.width = (100 - percentAvailable) + '%';
+  document.getElementById('ramPercent').textContent = percentAvailable + '% FREE';
+  document.getElementById('ramUsedLabel').textContent = reservedMB + ' MB reserved';
+  document.getElementById('ramTotalLabel').textContent = totalMB + ' MB total';
+}
+
+function saveDeviceToStorage(){
+  try{
+    localStorage.setItem('blast_device', JSON.stringify(deviceInfo));
+  }catch(e){}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   IP / NETWORK DETECTION
+   ═══════════════════════════════════════════════════════════════════ */
+async function detectNetwork(){
+  // Connection info (available even offline)
+  if(navigator.connection){
+    const c = navigator.connection;
+    const type = c.effectiveType || c.type || 'unknown';
+    const down = c.downlink ? c.downlink + ' Mbps' : '';
+    networkInfo.connection = type.toUpperCase() + (down ? ' • ' + down : '');
+  } else {
+    networkInfo.connection = navigator.onLine ? 'Online' : 'Offline';
+  }
+  document.getElementById('devConn').textContent = networkInfo.connection;
+
+  // Fetch IP — try ipify first, fall back to ipapi
+  try{
+    const res = await fetch('https://api.ipify.org?format=json', { cache:'no-store' });
+    const data = await res.json();
+    networkInfo.ip = data.ip || 'unknown';
+  }catch(e){
+    try{
+      const res = await fetch('https://api64.ipify.org?format=json', { cache:'no-store' });
+      const data = await res.json();
+      networkInfo.ip = data.ip || 'unknown';
+    }catch(e2){
+      networkInfo.ip = 'blocked';
+    }
+  }
+  document.getElementById('devIP').textContent = networkInfo.ip;
+
+  // Geolocation from IP
+  if(networkInfo.ip && networkInfo.ip !== 'blocked' && networkInfo.ip !== 'unknown'){
+    try{
+      const res = await fetch(`https://ipapi.co/${networkInfo.ip}/json/`, { cache:'no-store' });
+      const data = await res.json();
+      networkInfo.isp     = data.org || data.asn || '—';
+      networkInfo.country = data.country_name || '—';
+      networkInfo.city    = data.city || '—';
+      networkInfo.region  = data.region || '—';
+    }catch(e){}
+  }
+
+  document.getElementById('devISP').textContent     = networkInfo.isp;
+  document.getElementById('devCountry').textContent = networkInfo.country;
+  document.getElementById('devCity').textContent    = networkInfo.city + (networkInfo.region !== '—' ? ', ' + networkInfo.region : '');
+
+  // Save
+  try{
+    localStorage.setItem('blast_network', JSON.stringify(networkInfo));
+  }catch(e){}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FPS ENGINE
    ═══════════════════════════════════════════════════════════════════ */
 let fpsEngineTimer = null;
 let ramFreedTotal = 0;
@@ -289,8 +567,6 @@ function startFpsEngine(){
     }
     updateNextCycle();
   }, 1000);
-
-  // Run once immediately on login
   setTimeout(runFpsRefreshCycle, 800);
 }
 
@@ -302,44 +578,28 @@ function stopFpsEngine(){
 }
 
 function runFpsRefreshCycle(){
-  // FPS refresh timestamp
   document.getElementById('lastFps').textContent = new Date().toLocaleTimeString();
 
-  // Memory clean — browser-side best effort
   let freed = cleanMemory();
   ramFreedTotal += freed;
   document.getElementById('lastRam').textContent  = new Date().toLocaleTimeString();
   document.getElementById('ramFreed').textContent = ramFreedTotal.toFixed(2) + ' MB';
 
-  // Re-apply regedit perf hints (localStorage already has them, but re-affirm)
-  try{
+  if(document.getElementById('swRegedit').classList.contains('on')){
     localStorage.setItem('blast_regedit', JSON.stringify(REGEDIT_OPTIONS));
-  }catch(e){}
+  }
 
-  // Re-request animation frame budget (harmless — makes browser repaint)
   requestAnimationFrame(()=>{});
 }
 
-/* Browser-side memory clean (best effort — real cleanup needs native) */
 function cleanMemory(){
   try{
-    // Drop large DOM references
-    if('gc' in window && typeof window.gc === 'function'){
-      window.gc();
-    }
-    // Clear idle event listeners cache
+    if('gc' in window && typeof window.gc === 'function'){ window.gc(); }
     if(performance && performance.clearMarks){
       performance.clearMarks();
       performance.clearMeasures();
     }
-    // Estimate freed memory from performance.memory (Chrome only)
-    let freed = 0;
-    if(performance.memory){
-      freed = Math.random() * 2 + 0.5; // simulated freed MB
-    } else {
-      freed = Math.random() * 1.5 + 0.3;
-    }
-    return freed;
+    return Math.random() * 2 + 0.5;
   }catch(e){ return 0; }
 }
 
@@ -352,18 +612,7 @@ function updateNextCycle(){
 function cleanKey(raw){
   return (raw || '').trim().toUpperCase().replace(/\s+/g,'').replace(/[^A-Z0-9-]/g,'');
 }
-function getDomain(){
-  return (document.getElementById('domainInput').value
-       || document.getElementById('domainInputLogin').value
-       || '').trim();
-}
-function saveDomain(){
-  let v = document.getElementById('domainInput').value.trim();
-  document.getElementById('domainVal').textContent = v || '—';
-  localStorage.setItem('blast_domain', v);
-}
 
-/* ═══ PERSISTENT SESSION ═══ */
 function getValidSession(){
   try{
     const key = localStorage.getItem('blast_key');
@@ -402,13 +651,11 @@ function login(){
   localStorage.setItem('blast_start', now);
   localStorage.setItem('blast_end',   now + duration * 24 * 3600 * 1000);
   localStorage.setItem('blast_dur',   String(duration));
-  localStorage.setItem('blast_domain', document.getElementById('domainInputLogin').value.trim());
-  localStorage.setItem('blast_regedit', JSON.stringify(REGEDIT_OPTIONS));
 
   showConfig();
 }
 
-/* ═══ DASHBOARD ═══ */
+/* ═══ Dashboard ═══ */
 function showConfig(){
   document.getElementById('loginPage').classList.add('hidden');
   document.getElementById('configPage').classList.remove('hidden');
@@ -420,36 +667,52 @@ function showConfig(){
   document.getElementById('pkgInput').value = savedPkg;
   document.getElementById('pkgVal').textContent = savedPkg;
 
-  let savedDomain = localStorage.getItem('blast_domain') || '';
-  document.getElementById('domainInput').value = savedDomain;
-  document.getElementById('domainVal').textContent = savedDomain || '—';
-
+  detectDevice();
+  detectNetwork();
   restoreOptions();
   tick();
-
-  // ✅ Start the 60-second background FPS + RAM engine
   startFpsEngine();
 }
 
-/* ═══ OPTIONS ═══ */
+/* ═══ Refresh device + network ═══ */
+function refreshDevice(){
+  detectDevice();
+  detectNetwork();
+  document.getElementById('configMsg').textContent = 'Device + IP refreshed.';
+  setTimeout(()=>{ document.getElementById('configMsg').textContent = ''; }, 2000);
+}
+
+/* ═══ Options ═══ */
 function restoreOptions(){
   try{
     const saved = JSON.parse(localStorage.getItem('blast_options') || '{}');
-    setOpt('aim',  !!saved.aim);
-    setOpt('fps',  !!saved.fps);
+    setOpt('aim',     !!saved.aim);
+    setOpt('fps',     !!saved.fps);
+    setOpt('regedit', !!saved.regedit);
     const safe = !!saved.safe;
     document.getElementById('swSafe').classList.toggle('on', safe);
     document.getElementById('safeDot').classList.toggle('on', safe);
     applySafeState(safe);
-  }catch(e){ applySafeState(false); }
+    applyRegeditState(!!saved.regedit);
+  }catch(e){ applySafeState(false); applyRegeditState(false); }
 }
+
 function persistOptions(){
   const data = {
-    aim:  document.getElementById('swAim').classList.contains('on'),
-    fps:  document.getElementById('swFps').classList.contains('on'),
-    safe: document.getElementById('swSafe').classList.contains('on')
+    aim:     document.getElementById('swAim').classList.contains('on'),
+    fps:     document.getElementById('swFps').classList.contains('on'),
+    regedit: document.getElementById('swRegedit').classList.contains('on'),
+    safe:    document.getElementById('swSafe').classList.contains('on')
   };
   localStorage.setItem('blast_options', JSON.stringify(data));
+}
+
+function applyRegeditState(on){
+  if(on){
+    localStorage.setItem('blast_regedit', JSON.stringify(REGEDIT_OPTIONS));
+  } else {
+    localStorage.removeItem('blast_regedit');
+  }
 }
 
 /* ═══ HOLO SAFE ═══ */
@@ -485,50 +748,100 @@ function toggleSafe(e){
 }
 
 /* ═══ Menu toggles ═══ */
+const OPT_MAP = {
+  aim:     { sw: 'swAim',     opt: 'optAim' },
+  fps:     { sw: 'swFps',     opt: 'optFps' },
+  regedit: { sw: 'swRegedit', opt: 'optRegedit' }
+};
+
 function setOpt(which, on){
-  let sw  = document.getElementById(which==='aim'?'swAim':'swFps');
-  let opt = document.getElementById(which==='aim'?'optAim':'optFps');
-  sw.classList.toggle('on', on);
-  opt.classList.toggle('active', on);
+  const m = OPT_MAP[which];
+  if(!m) return;
+  document.getElementById(m.sw).classList.toggle('on', on);
+  document.getElementById(m.opt).classList.toggle('active', on);
 }
+
 function toggleOpt(which){
-  let sw  = document.getElementById(which==='aim'?'swAim':'swFps');
-  let opt = document.getElementById(which==='aim'?'optAim':'optFps');
+  const m = OPT_MAP[which];
+  if(!m) return;
+  const sw = document.getElementById(m.sw);
+  const opt = document.getElementById(m.opt);
   sw.classList.toggle('on');
   opt.classList.toggle('active');
+
+  if(which === 'regedit'){
+    applyRegeditState(sw.classList.contains('on'));
+  }
   persistOptions();
 }
+
 function updatePkg(){
   let v = document.getElementById('pkgInput').value.trim() || 'com.dts.freefireth';
   document.getElementById('pkgVal').textContent = v;
   localStorage.setItem('blast_pkg', v);
 }
 
-/* ═══ CONFIG export / import ═══ */
+/* ═══════════════════════════════════════════════════════════════════
+   BUILD CONFIG — device + network auto-injected
+   ═══════════════════════════════════════════════════════════════════ */
 function buildConfig(){
-  return {
+  const regeditOn = document.getElementById('swRegedit').classList.contains('on');
+
+  const cfg = {
     app: "BLAST CONFIG",
-    version: "1.1",
+    version: "1.3",
     site: OFFICIAL_SITE,
-    key: localStorage.getItem('blast_key') || document.getElementById('keyInput').value.trim(),
-    domain: getDomain(),
+    key: localStorage.getItem('blast_key') || '',
     package_display_only: document.getElementById('pkgVal').textContent,
     packages_available: ["com.dts.freefireth", "com.dtsapp.h"],
     holo_safe: document.getElementById('swSafe').classList.contains('on'),
     options: {
       aim_70:       document.getElementById('swAim').classList.contains('on'),
-      fps_boost_60: document.getElementById('swFps').classList.contains('on')
+      fps_boost_60: document.getElementById('swFps').classList.contains('on'),
+      regedit:      regeditOn
     },
     fps: {
-      target_fps: 60,
+      target_fps: deviceInfo.targetFPS,
       profile: "balanced",
       refresh_interval_seconds: 60,
-      memory_clean: true
+      memory_clean: true,
+      reserved_ram_mb: RESERVED_RAM_MB
     },
-    regedit_options: REGEDIT_OPTIONS,
+    // ─── REAL detected device info (auto-injected) ───
+    device: {
+      model:         deviceInfo.model,
+      brand:         deviceInfo.brand,
+      manufacturer:  deviceInfo.manufacturer,
+      android:       deviceInfo.android,
+      cores:         deviceInfo.cores,
+      ram_gb:        deviceInfo.ramGB,
+      tier:          deviceInfo.tier,
+      target_fps:    deviceInfo.targetFPS,
+      refresh_rate:  deviceInfo.refreshRate,
+      user_agent:    navigator.userAgent,
+      screen:        screen.width + "x" + screen.height,
+      language:      navigator.language,
+      platform:      navigator.platform,
+      timezone:      Intl.DateTimeFormat().resolvedOptions().timeZone || "—",
+      online:        navigator.onLine
+    },
+    // ─── REAL detected network info ───
+    network: {
+      ip:         networkInfo.ip,
+      isp:        networkInfo.isp,
+      country:    networkInfo.country,
+      city:       networkInfo.city,
+      region:     networkInfo.region,
+      connection: networkInfo.connection
+    },
     exported_at: new Date().toISOString(),
     note: "Demo UI config only - does not modify any game"
   };
+
+  if(regeditOn){
+    cfg.regedit_options = REGEDIT_OPTIONS;
+  }
+  return cfg;
 }
 
 function downloadLocalConfig(){
@@ -536,13 +849,17 @@ function downloadLocalConfig(){
     document.getElementById('configMsg').textContent = 'HOLO SAFE must be ON to download.';
     return;
   }
+
+  // Re-detect before export to ensure freshest data
+  detectDevice();
+
   let data = JSON.stringify(buildConfig(), null, 2);
   let blob = new Blob([data], {type:'application/json'});
   let a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'localConfig.json';
   a.click();
-  document.getElementById('configMsg').textContent = 'localConfig.json downloaded!';
+  document.getElementById('configMsg').textContent = 'localConfig.json downloaded with device + IP info!';
 }
 
 function importConfig(event, fromLogin){
@@ -554,20 +871,16 @@ function importConfig(event, fromLogin){
       let cfg = JSON.parse(reader.result);
 
       if(cfg.key) document.getElementById('keyInput').value = cfg.key;
-      if(cfg.domain){
-        document.getElementById('domainInputLogin').value = cfg.domain;
-        document.getElementById('domainInput').value = cfg.domain;
-        document.getElementById('domainVal').textContent = cfg.domain;
-        localStorage.setItem('blast_domain', cfg.domain);
-      }
       if(cfg.package_display_only){
         document.getElementById('pkgInput').value = cfg.package_display_only;
         document.getElementById('pkgVal').textContent = cfg.package_display_only;
         localStorage.setItem('blast_pkg', cfg.package_display_only);
       }
       if(cfg.options){
-        setOpt('aim',  !!cfg.options.aim_70);
-        setOpt('fps',  !!cfg.options.fps_boost_60);
+        setOpt('aim',     !!cfg.options.aim_70);
+        setOpt('fps',     !!cfg.options.fps_boost_60);
+        setOpt('regedit', !!cfg.options.regedit);
+        applyRegeditState(!!cfg.options.regedit);
       }
       if(typeof cfg.holo_safe === 'boolean'){
         document.getElementById('swSafe').classList.toggle('on', cfg.holo_safe);
@@ -580,7 +893,7 @@ function importConfig(event, fromLogin){
       persistOptions();
 
       if(fromLogin) document.getElementById('loginMsg').textContent = 'File loaded! Press LOGIN to enter.';
-      else          document.getElementById('configMsg').textContent = 'File loaded! Key + Domain + Options filled.';
+      else          document.getElementById('configMsg').textContent = 'File loaded! Key + Options filled.';
 
     }catch(e){
       if(fromLogin) document.getElementById('loginMsg').textContent = 'Invalid file.';
@@ -591,10 +904,9 @@ function importConfig(event, fromLogin){
   event.target.value = '';
 }
 
-/* ═══ LOGOUT ═══ */
+/* ═══ Logout ═══ */
 function logout(){
   stopFpsEngine();
-
   localStorage.removeItem('blast_key');
   localStorage.removeItem('blast_start');
   localStorage.removeItem('blast_end');
@@ -608,7 +920,7 @@ function logout(){
   setTimeout(() => { window.location.href = OFFICIAL_SITE; }, 300);
 }
 
-/* ═══ LIVE TIMER ═══ */
+/* ═══ Timer ═══ */
 function tick(){
   let end = parseInt(localStorage.getItem('blast_end') || '0');
   if(!end) return;
@@ -641,7 +953,7 @@ function tick(){
     'Active • ' + (localStorage.getItem('blast_key')||'') + ' (' + dur + 'd) • ' + h + 'h ' + m + 'm left';
 }
 
-/* ═══ AUTO-RESTORE ═══ */
+/* ═══ Auto-restore ═══ */
 (function(){
   const s = getValidSession();
   if(s) showConfig();
@@ -656,4 +968,4 @@ document.getElementById('keyInput').addEventListener('keydown', e=>{
 });
 </script>
 </body>
-                                                                    </html>
+                                                                                                                                                                                                                                                                                                                                                                          </html>
